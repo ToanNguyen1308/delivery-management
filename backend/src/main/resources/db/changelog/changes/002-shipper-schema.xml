@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="002-1-create-table-shippers" author="delivery">
+        <createTable tableName="shippers">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="shipper_code" type="VARCHAR(20)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_shippers_code"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_shippers_user"/>
+            </column>
+            <column name="vehicle_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="license_plate" type="VARCHAR(20)"/>
+            <column name="max_load_kg" type="DECIMAL(10,2)"/>
+            <column name="zone" type="VARCHAR(100)"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="OFFLINE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_latitude" type="DECIMAL(10,7)"/>
+            <column name="current_longitude" type="DECIMAL(10,7)"/>
+            <column name="last_location_at" type="TIMESTAMP"/>
+            <column name="rating" type="DECIMAL(3,2)" defaultValueNumeric="5.00"/>
+            <column name="total_delivered" type="INT" defaultValueNumeric="0"/>
+            <column name="total_failed" type="INT" defaultValueNumeric="0"/>
+            <column name="current_load" type="INT" defaultValueNumeric="0"/>
+            <column name="max_concurrent_orders" type="INT" defaultValueNumeric="5"/>
+            <column name="id_card_url" type="VARCHAR(500)"/>
+            <column name="driver_license_url" type="VARCHAR(500)"/>
+            <column name="note" type="VARCHAR(500)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="shippers" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_shippers_user"/>
+        <createIndex tableName="shippers" indexName="idx_shippers_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="shippers" indexName="idx_shippers_zone">
+            <column name="zone"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="002-2-create-table-shipper-locations" author="delivery">
+        <createTable tableName="shipper_locations">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="shipper_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT"/>
+            <column name="latitude" type="DECIMAL(10,7)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="longitude" type="DECIMAL(10,7)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="speed_kmh" type="DECIMAL(6,2)"/>
+            <column name="recorded_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="shipper_locations" baseColumnNames="shipper_id"
+                                 referencedTableName="shippers" referencedColumnNames="id"
+                                 constraintName="fk_shipper_locations_shipper"/>
+        <createIndex tableName="shipper_locations" indexName="idx_shipper_locations_shipper_time">
+            <column name="shipper_id"/>
+            <column name="recorded_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,100 @@
+/** Danh sach function_code khop voi PermissionCode.java o backend. */
+export const PERMISSION = {
+  USER_VIEW: 'ROLE_USER_VIEW',
+  USER_CREATE: 'ROLE_USER_CREATE',
+  USER_UPDATE: 'ROLE_USER_UPDATE',
+  USER_DELETE: 'ROLE_USER_DELETE',
+
+  ROLE_VIEW: 'ROLE_ROLE_VIEW',
+  ROLE_MANAGE: 'ROLE_ROLE_MANAGE',
+
+  SHIPPER_VIEW: 'ROLE_SHIPPER_VIEW',
+  SHIPPER_CREATE: 'ROLE_SHIPPER_CREATE',
+  SHIPPER_UPDATE: 'ROLE_SHIPPER_UPDATE',
+  SHIPPER_DELETE: 'ROLE_SHIPPER_DELETE',
+  SHIPPER_SELF: 'ROLE_SHIPPER_SELF',
+
+  ORDER_VIEW: 'ROLE_ORDER_VIEW',
+  ORDER_CREATE: 'ROLE_ORDER_CREATE',
+  ORDER_UPDATE: 'ROLE_ORDER_UPDATE',
+  ORDER_CANCEL: 'ROLE_ORDER_CANCEL',
+  ORDER_CONFIRM: 'ROLE_ORDER_CONFIRM',
+  ORDER_IMPORT: 'ROLE_ORDER_IMPORT',
+  ORDER_EXPORT: 'ROLE_ORDER_EXPORT',
+
+  DISPATCH_VIEW: 'ROLE_DISPATCH_VIEW',
+  DISPATCH_ASSIGN: 'ROLE_DISPATCH_ASSIGN',
+  DISPATCH_RESPOND: 'ROLE_DISPATCH_RESPOND',
+
+  TRACKING_VIEW: 'ROLE_TRACKING_VIEW',
+  TRACKING_PUSH: 'ROLE_TRACKING_PUSH',
+
+  PRICING_VIEW: 'ROLE_PRICING_VIEW',
+  PRICING_MANAGE: 'ROLE_PRICING_MANAGE',
+  VOUCHER_VIEW: 'ROLE_VOUCHER_VIEW',
+  VOUCHER_MANAGE: 'ROLE_VOUCHER_MANAGE',
+
+  PAYMENT_VIEW: 'ROLE_PAYMENT_VIEW',
+  PAYMENT_CREATE: 'ROLE_PAYMENT_CREATE',
+  COD_VIEW: 'ROLE_COD_VIEW',
+  COD_SUBMIT: 'ROLE_COD_SUBMIT',
+  COD_CONFIRM: 'ROLE_COD_CONFIRM',
+
+  DASHBOARD_VIEW: 'ROLE_DASHBOARD_VIEW',
+  DASHBOARD_ADMIN: 'ROLE_DASHBOARD_ADMIN',
+} as const;
+
+export const ROLE_GROUP = {
+  ADMIN: 'ADMIN',
+  DISPATCHER: 'DISPATCHER',
+  SHIPPER: 'SHIPPER',
+  CUSTOMER: 'CUSTOMER',
+} as const;
+
+/** Mau hien thi cho tung trang thai don hang tren the Tag cua Ant Design. */
+export const ORDER_STATUS_COLOR: Record<string, string> = {
+  CREATED: 'default',
+  CONFIRMED: 'blue',
+  ASSIGNED: 'geekblue',
+  PICKED_UP: 'purple',
+  IN_TRANSIT: 'processing',
+  DELIVERED: 'success',
+  FAILED: 'error',
+  RETURNED: 'warning',
+  CANCELLED: 'default',
+};
+
+export const PAYMENT_STATUS_COLOR: Record<string, string> = {
+  UNPAID: 'default',
+  PENDING: 'warning',
+  PAID: 'success',
+  FAILED: 'error',
+  REFUNDED: 'purple',
+};
+
+export const SHIPPER_STATUS_COLOR: Record<string, string> = {
+  ONLINE: 'success',
+  BUSY: 'processing',
+  OFFLINE: 'default',
+  SUSPENDED: 'error',
+};
+
+export const ASSIGNMENT_STATUS_COLOR: Record<string, string> = {
+  PENDING: 'warning',
+  ACCEPTED: 'success',
+  REJECTED: 'error',
+  COMPLETED: 'blue',
+  CANCELLED: 'default',
+};
+
+export const COD_STATUS_COLOR: Record<string, string> = {
+  HOLDING: 'warning',
+  SUBMITTED: 'processing',
+  CONFIRMED: 'success',
+};
+
+export const VOUCHER_STATUS_COLOR: Record<string, string> = {
+  ACTIVE: 'success',
+  INACTIVE: 'default',
+  EXPIRED: 'error',
+};

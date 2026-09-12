@@ -1,0 +1,8 @@
+logging:
+  level:
+    root: INFO
+    com.viettel.delivery: INFO
+
+spring:
+  jpa:
+    show-sql: false

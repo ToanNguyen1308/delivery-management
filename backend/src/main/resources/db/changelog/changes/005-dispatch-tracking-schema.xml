@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="005-1-create-table-delivery-assignments" author="delivery">
+        <createTable tableName="delivery_assignments">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shipper_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assigned_by_user_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assign_type" type="VARCHAR(20)" defaultValue="MANUAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="distance_km" type="DECIMAL(8,2)"/>
+            <column name="assigned_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="responded_at" type="TIMESTAMP"/>
+            <column name="reject_reason" type="VARCHAR(500)"/>
+            <column name="note" type="VARCHAR(500)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="delivery_assignments" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_assignments_order"/>
+        <addForeignKeyConstraint baseTableName="delivery_assignments" baseColumnNames="shipper_id"
+                                 referencedTableName="shippers" referencedColumnNames="id"
+                                 constraintName="fk_assignments_shipper"/>
+        <createIndex tableName="delivery_assignments" indexName="idx_assignments_shipper_status">
+            <column name="shipper_id"/>
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="delivery_assignments" indexName="idx_assignments_order">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="005-2-create-table-tracking-events" author="delivery">
+        <createTable tableName="tracking_events">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shipper_id" type="BIGINT"/>
+            <column name="event_type" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="latitude" type="DECIMAL(10,7)"/>
+            <column name="longitude" type="DECIMAL(10,7)"/>
+            <column name="location_name" type="VARCHAR(500)"/>
+            <column name="occurred_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="tracking_events" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_tracking_events_order"/>
+        <createIndex tableName="tracking_events" indexName="idx_tracking_events_order_time">
+            <column name="order_id"/>
+            <column name="occurred_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="005-3-add-fk-shipper-locations-order" author="delivery">
+        <addForeignKeyConstraint baseTableName="shipper_locations" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_shipper_locations_order"/>
+    </changeSet>
+
+</databaseChangeLog>

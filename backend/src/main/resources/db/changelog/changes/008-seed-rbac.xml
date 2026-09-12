@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="008-1-seed-role-groups" author="delivery">
+        <insert tableName="role_groups">
+            <column name="role_group_code" value="ADMIN"/>
+            <column name="role_group_name" value="Quản trị hệ thống"/>
+            <column name="description" value="Toàn quyền quản trị hệ thống"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="role_groups">
+            <column name="role_group_code" value="DISPATCHER"/>
+            <column name="role_group_name" value="Điều phối viên"/>
+            <column name="description" value="Xác nhận đơn và phân công shipper"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="role_groups">
+            <column name="role_group_code" value="SHIPPER"/>
+            <column name="role_group_name" value="Nhân viên giao hàng"/>
+            <column name="description" value="Nhận đơn, cập nhật trạng thái và giao hàng"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="role_groups">
+            <column name="role_group_code" value="CUSTOMER"/>
+            <column name="role_group_name" value="Khách hàng"/>
+            <column name="description" value="Tạo đơn, thanh toán và theo dõi đơn hàng"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="008-2-seed-functions" author="delivery">
+        <!-- Quản lý người dùng -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_USER_VIEW"/>
+            <column name="function_name" value="Xem danh sách người dùng"/>
+            <column name="module" value="USER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_USER_CREATE"/>
+            <column name="function_name" value="Tạo người dùng"/>
+            <column name="module" value="USER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_USER_UPDATE"/>
+            <column name="function_name" value="Cập nhật người dùng"/>
+            <column name="module" value="USER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_USER_DELETE"/>
+            <column name="function_name" value="Xóa người dùng"/>
+            <column name="module" value="USER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Quản lý nhóm quyền -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ROLE_VIEW"/>
+            <column name="function_name" value="Xem nhóm quyền và chức năng"/>
+            <column name="module" value="ROLE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ROLE_MANAGE"/>
+            <column name="function_name" value="Quản lý nhóm quyền"/>
+            <column name="module" value="ROLE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Quản lý shipper -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_SHIPPER_VIEW"/>
+            <column name="function_name" value="Xem danh sách shipper"/>
+            <column name="module" value="SHIPPER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_SHIPPER_CREATE"/>
+            <column name="function_name" value="Tạo hồ sơ shipper"/>
+            <column name="module" value="SHIPPER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_SHIPPER_UPDATE"/>
+            <column name="function_name" value="Cập nhật hồ sơ shipper"/>
+            <column name="module" value="SHIPPER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_SHIPPER_DELETE"/>
+            <column name="function_name" value="Xóa hồ sơ shipper"/>
+            <column name="module" value="SHIPPER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_SHIPPER_SELF"/>
+            <column name="function_name" value="Quản lý hồ sơ shipper của chính mình"/>
+            <column name="module" value="SHIPPER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Quản lý đơn hàng -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_VIEW"/>
+            <column name="function_name" value="Xem đơn hàng"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_CREATE"/>
+            <column name="function_name" value="Tạo đơn hàng"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_UPDATE"/>
+            <column name="function_name" value="Cập nhật đơn hàng"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_CANCEL"/>
+            <column name="function_name" value="Hủy đơn hàng"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_CONFIRM"/>
+            <column name="function_name" value="Xác nhận đơn hàng"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_IMPORT"/>
+            <column name="function_name" value="Import đơn hàng từ Excel"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_ORDER_EXPORT"/>
+            <column name="function_name" value="Export đơn hàng ra Excel"/>
+            <column name="module" value="ORDER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Điều phối -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_DISPATCH_VIEW"/>
+            <column name="function_name" value="Xem màn hình điều phối"/>
+            <column name="module" value="DISPATCH"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_DISPATCH_ASSIGN"/>
+            <column name="function_name" value="Phân công shipper"/>
+            <column name="module" value="DISPATCH"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_DISPATCH_RESPOND"/>
+            <column name="function_name" value="Nhận hoặc từ chối đơn được phân công"/>
+            <column name="module" value="DISPATCH"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Tracking -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_TRACKING_VIEW"/>
+            <column name="function_name" value="Xem hành trình đơn hàng"/>
+            <column name="module" value="TRACKING"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_TRACKING_PUSH"/>
+            <column name="function_name" value="Gửi vị trí GPS"/>
+            <column name="module" value="TRACKING"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Phí và voucher -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_PRICING_VIEW"/>
+            <column name="function_name" value="Xem bảng phí"/>
+            <column name="module" value="PRICING"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_PRICING_MANAGE"/>
+            <column name="function_name" value="Cấu hình bảng phí"/>
+            <column name="module" value="PRICING"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_VOUCHER_VIEW"/>
+            <column name="function_name" value="Xem voucher"/>
+            <column name="module" value="VOUCHER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_VOUCHER_MANAGE"/>
+            <column name="function_name" value="Quản lý voucher"/>
+            <column name="module" value="VOUCHER"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Thanh toán -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_PAYMENT_VIEW"/>
+            <column name="function_name" value="Xem giao dịch thanh toán"/>
+            <column name="module" value="PAYMENT"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_PAYMENT_CREATE"/>
+            <column name="function_name" value="Tạo giao dịch thanh toán"/>
+            <column name="module" value="PAYMENT"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_COD_VIEW"/>
+            <column name="function_name" value="Xem đối soát COD"/>
+            <column name="module" value="PAYMENT"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_COD_SUBMIT"/>
+            <column name="function_name" value="Nộp tiền COD"/>
+            <column name="module" value="PAYMENT"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_COD_CONFIRM"/>
+            <column name="function_name" value="Xác nhận đối soát COD"/>
+            <column name="module" value="PAYMENT"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+
+        <!-- Dashboard -->
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_DASHBOARD_VIEW"/>
+            <column name="function_name" value="Xem dashboard"/>
+            <column name="module" value="DASHBOARD"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="functions">
+            <column name="function_code" value="ROLE_DASHBOARD_ADMIN"/>
+            <column name="function_name" value="Xem dashboard toàn hệ thống"/>
+            <column name="module" value="DASHBOARD"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="008-3-map-admin-functions" author="delivery">
+        <sql>
+            INSERT INTO role_group_function (role_group_id, function_id)
+            SELECT rg.id, f.id
+            FROM role_groups rg CROSS JOIN functions f
+            WHERE rg.role_group_code = 'ADMIN'
+        </sql>
+    </changeSet>
+
+    <changeSet id="008-4-map-dispatcher-functions" author="delivery">
+        <sql>
+            INSERT INTO role_group_function (role_group_id, function_id)
+            SELECT rg.id, f.id
+            FROM role_groups rg CROSS JOIN functions f
+            WHERE rg.role_group_code = 'DISPATCHER'
+              AND f.function_code IN ('ROLE_USER_VIEW', 'ROLE_SHIPPER_VIEW', 'ROLE_SHIPPER_UPDATE',
+                                      'ROLE_ORDER_VIEW', 'ROLE_ORDER_CREATE', 'ROLE_ORDER_UPDATE',
+                                      'ROLE_ORDER_CANCEL', 'ROLE_ORDER_CONFIRM', 'ROLE_ORDER_IMPORT',
+                                      'ROLE_ORDER_EXPORT', 'ROLE_DISPATCH_VIEW', 'ROLE_DISPATCH_ASSIGN',
+                                      'ROLE_TRACKING_VIEW', 'ROLE_PRICING_VIEW', 'ROLE_VOUCHER_VIEW',
+                                      'ROLE_PAYMENT_VIEW', 'ROLE_COD_VIEW', 'ROLE_COD_CONFIRM',
+                                      'ROLE_DASHBOARD_VIEW')
+        </sql>
+    </changeSet>
+
+    <changeSet id="008-5-map-shipper-functions" author="delivery">
+        <sql>
+            INSERT INTO role_group_function (role_group_id, function_id)
+            SELECT rg.id, f.id
+            FROM role_groups rg CROSS JOIN functions f
+            WHERE rg.role_group_code = 'SHIPPER'
+              AND f.function_code IN ('ROLE_SHIPPER_SELF', 'ROLE_ORDER_VIEW', 'ROLE_DISPATCH_RESPOND',
+                                      'ROLE_TRACKING_VIEW', 'ROLE_TRACKING_PUSH', 'ROLE_COD_VIEW',
+                                      'ROLE_COD_SUBMIT', 'ROLE_DASHBOARD_VIEW')
+        </sql>
+    </changeSet>
+
+    <changeSet id="008-6-map-customer-functions" author="delivery">
+        <sql>
+            INSERT INTO role_group_function (role_group_id, function_id)
+            SELECT rg.id, f.id
+            FROM role_groups rg CROSS JOIN functions f
+            WHERE rg.role_group_code = 'CUSTOMER'
+              AND f.function_code IN ('ROLE_ORDER_VIEW', 'ROLE_ORDER_CREATE', 'ROLE_ORDER_UPDATE',
+                                      'ROLE_ORDER_CANCEL', 'ROLE_TRACKING_VIEW', 'ROLE_PRICING_VIEW',
+                                      'ROLE_VOUCHER_VIEW', 'ROLE_PAYMENT_VIEW', 'ROLE_PAYMENT_CREATE',
+                                      'ROLE_DASHBOARD_VIEW')
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

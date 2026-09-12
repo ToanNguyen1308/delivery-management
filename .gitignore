@@ -1,0 +1,42 @@
+# Environment
+.env
+*.local
+
+# Java / Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+logs/
+*.log
+
+# Node
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+*.tsbuildinfo
+
+# IDE
+.idea/
+# Giu lai cau hinh chung cho VS Code / Cursor (giup Java Language Server import
+# Maven va bat Lombok dung cach), bo qua cac file rieng cua tung may
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.iml
+*.iws
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+docker-data/
+
+# Cluster PostgreSQL tam cho moi truong phat trien (xem scripts/dev-db.sh)
+.tmp-pg/

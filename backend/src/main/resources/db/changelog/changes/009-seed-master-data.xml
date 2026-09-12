@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <!--
+        Bảng phí mẫu (đơn vị VND):
+        phí = base_fee (đã gồm base_distance_km và base_weight_kg)
+              + (quãng đường vượt) * per_km_fee
+              + (khối lượng vượt) * per_kg_fee
+              + phụ phí COD
+    -->
+    <changeSet id="009-1-seed-pricing-rules" author="delivery">
+        <insert tableName="pricing_rules">
+            <column name="service_type" value="STANDARD"/>
+            <column name="base_fee" valueNumeric="15000"/>
+            <column name="base_distance_km" valueNumeric="3"/>
+            <column name="per_km_fee" valueNumeric="4000"/>
+            <column name="base_weight_kg" valueNumeric="3"/>
+            <column name="per_kg_fee" valueNumeric="5000"/>
+            <column name="remote_area_surcharge" valueNumeric="0"/>
+            <column name="cod_fee_percent" valueNumeric="1.00"/>
+            <column name="min_fee" valueNumeric="15000"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="pricing_rules">
+            <column name="service_type" value="EXPRESS"/>
+            <column name="base_fee" valueNumeric="25000"/>
+            <column name="base_distance_km" valueNumeric="3"/>
+            <column name="per_km_fee" valueNumeric="6000"/>
+            <column name="base_weight_kg" valueNumeric="3"/>
+            <column name="per_kg_fee" valueNumeric="7000"/>
+            <column name="remote_area_surcharge" valueNumeric="10000"/>
+            <column name="cod_fee_percent" valueNumeric="1.50"/>
+            <column name="min_fee" valueNumeric="25000"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="pricing_rules">
+            <column name="service_type" value="SAME_DAY"/>
+            <column name="base_fee" valueNumeric="40000"/>
+            <column name="base_distance_km" valueNumeric="3"/>
+            <column name="per_km_fee" valueNumeric="8000"/>
+            <column name="base_weight_kg" valueNumeric="2"/>
+            <column name="per_kg_fee" valueNumeric="10000"/>
+            <column name="remote_area_surcharge" valueNumeric="20000"/>
+            <column name="cod_fee_percent" valueNumeric="2.00"/>
+            <column name="min_fee" valueNumeric="40000"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="009-2-seed-vouchers" author="delivery">
+        <insert tableName="vouchers">
+            <column name="code" value="FREESHIP"/>
+            <column name="name" value="Miễn phí vận chuyển đơn đầu tiên"/>
+            <column name="discount_type" value="FREE_SHIP"/>
+            <column name="discount_value" valueNumeric="0"/>
+            <column name="min_order_amount" valueNumeric="0"/>
+            <column name="max_discount_amount" valueNumeric="50000"/>
+            <column name="quantity" valueNumeric="1000"/>
+            <column name="used_count" valueNumeric="0"/>
+            <column name="usage_limit_per_user" valueNumeric="1"/>
+            <column name="valid_from" valueDate="2024-01-01T00:00:00"/>
+            <column name="valid_to" valueDate="2030-12-31T23:59:59"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="description" value="Miễn phí ship tối đa 50.000đ"/>
+            <column name="version" valueNumeric="0"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="vouchers">
+            <column name="code" value="GIAM20"/>
+            <column name="name" value="Giảm 20% phí vận chuyển"/>
+            <column name="discount_type" value="PERCENT"/>
+            <column name="discount_value" valueNumeric="20"/>
+            <column name="min_order_amount" valueNumeric="20000"/>
+            <column name="max_discount_amount" valueNumeric="30000"/>
+            <column name="quantity" valueNumeric="500"/>
+            <column name="used_count" valueNumeric="0"/>
+            <column name="usage_limit_per_user" valueNumeric="3"/>
+            <column name="valid_from" valueDate="2024-01-01T00:00:00"/>
+            <column name="valid_to" valueDate="2030-12-31T23:59:59"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="description" value="Giảm 20% phí ship, tối đa 30.000đ"/>
+            <column name="version" valueNumeric="0"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="vouchers">
+            <column name="code" value="GIAM10K"/>
+            <column name="name" value="Giảm 10.000đ phí vận chuyển"/>
+            <column name="discount_type" value="FIXED"/>
+            <column name="discount_value" valueNumeric="10000"/>
+            <column name="min_order_amount" valueNumeric="30000"/>
+            <column name="quantity" valueNumeric="800"/>
+            <column name="used_count" valueNumeric="0"/>
+            <column name="usage_limit_per_user" valueNumeric="5"/>
+            <column name="valid_from" valueDate="2024-01-01T00:00:00"/>
+            <column name="valid_to" valueDate="2030-12-31T23:59:59"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="description" value="Giảm ngay 10.000đ cho đơn từ 30.000đ"/>
+            <column name="version" valueNumeric="0"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

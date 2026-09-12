@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="004-1-create-table-orders" author="delivery">
+        <createTable tableName="orders">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_code" type="VARCHAR(30)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_orders_code"/>
+            </column>
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Thong tin nguoi gui va diem lay hang -->
+            <column name="sender_name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender_phone" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pickup_address" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pickup_district" type="VARCHAR(100)"/>
+            <column name="pickup_province" type="VARCHAR(100)"/>
+            <column name="pickup_latitude" type="DECIMAL(10,7)"/>
+            <column name="pickup_longitude" type="DECIMAL(10,7)"/>
+
+            <!-- Thong tin nguoi nhan va diem giao hang -->
+            <column name="receiver_name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="receiver_phone" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delivery_address" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delivery_district" type="VARCHAR(100)"/>
+            <column name="delivery_province" type="VARCHAR(100)"/>
+            <column name="delivery_latitude" type="DECIMAL(10,7)"/>
+            <column name="delivery_longitude" type="DECIMAL(10,7)"/>
+
+            <!-- Thong tin kien hang -->
+            <column name="package_description" type="VARCHAR(500)"/>
+            <column name="weight_kg" type="DECIMAL(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="length_cm" type="DECIMAL(8,2)"/>
+            <column name="width_cm" type="DECIMAL(8,2)"/>
+            <column name="height_cm" type="DECIMAL(8,2)"/>
+            <column name="fragile" type="BOOLEAN" defaultValueBoolean="false"/>
+
+            <!-- Dich vu va cuoc phi -->
+            <column name="service_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="distance_km" type="DECIMAL(8,2)" defaultValueNumeric="0"/>
+            <column name="shipping_fee" type="DECIMAL(12,2)" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surcharge" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="discount_amount" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="cod_amount" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="total_amount" type="DECIMAL(12,2)" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voucher_id" type="BIGINT"/>
+            <column name="voucher_code" type="VARCHAR(50)"/>
+
+            <!-- Trang thai -->
+            <column name="status" type="VARCHAR(20)" defaultValue="CREATED">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_method" type="VARCHAR(20)" defaultValue="COD">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payment_status" type="VARCHAR(20)" defaultValue="UNPAID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cod_settlement_status" type="VARCHAR(20)"/>
+
+            <!-- Moc thoi gian va shipper phu trach -->
+            <column name="expected_delivery_at" type="TIMESTAMP"/>
+            <column name="picked_up_at" type="TIMESTAMP"/>
+            <column name="delivered_at" type="TIMESTAMP"/>
+            <column name="current_shipper_id" type="BIGINT"/>
+
+            <column name="proof_image_url" type="VARCHAR(500)"/>
+            <column name="cancel_reason" type="VARCHAR(500)"/>
+            <column name="failure_reason" type="VARCHAR(500)"/>
+            <column name="note" type="VARCHAR(500)"/>
+
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="customer_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_orders_customer"/>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="current_shipper_id"
+                                 referencedTableName="shippers" referencedColumnNames="id"
+                                 constraintName="fk_orders_shipper"/>
+        <addForeignKeyConstraint baseTableName="orders" baseColumnNames="voucher_id"
+                                 referencedTableName="vouchers" referencedColumnNames="id"
+                                 constraintName="fk_orders_voucher"/>
+
+        <createIndex tableName="orders" indexName="idx_orders_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_customer">
+            <column name="customer_id"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_shipper">
+            <column name="current_shipper_id"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_created_date">
+            <column name="created_date"/>
+        </createIndex>
+        <createIndex tableName="orders" indexName="idx_orders_payment_status">
+            <column name="payment_status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="004-2-create-table-order-items" author="delivery">
+        <createTable tableName="order_items">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="item_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INT" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="unit_price" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="weight_kg" type="DECIMAL(10,2)" defaultValueNumeric="0"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="order_items" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_order_items_order"/>
+    </changeSet>
+
+    <changeSet id="004-3-create-table-order-status-history" author="delivery">
+        <createTable tableName="order_status_history">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_status" type="VARCHAR(20)"/>
+            <column name="to_status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="note" type="VARCHAR(500)"/>
+            <column name="changed_by_user_id" type="BIGINT"/>
+            <column name="changed_by_name" type="VARCHAR(150)"/>
+            <column name="changed_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="order_status_history" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_order_status_history_order"/>
+        <createIndex tableName="order_status_history" indexName="idx_order_status_history_order">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="004-4-add-fk-voucher-usages-order" author="delivery">
+        <addForeignKeyConstraint baseTableName="voucher_usages" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_voucher_usages_order"/>
+    </changeSet>
+
+</databaseChangeLog>

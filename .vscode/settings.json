@@ -1,0 +1,20 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.maven.enabled": true,
+  "java.maven.downloadSources": true,
+  "java.project.importOnFirstTimeStartup": "automatic",
+  "java.jdt.ls.lombokSupport.enabled": true,
+  "java.compile.nullAnalysis.mode": "disabled",
+  "java.configuration.detectJdksAtStart": true,
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "files.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/.tmp-pg": true
+  },
+  "search.exclude": {
+    "**/target": true,
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}

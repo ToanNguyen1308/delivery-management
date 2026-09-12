@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="006-1-create-table-payments" author="delivery">
+        <createTable tableName="payments">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="txn_ref" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_payments_txn_ref"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pay_url" type="VARCHAR(2000)"/>
+            <column name="transaction_no" type="VARCHAR(100)"/>
+            <column name="bank_code" type="VARCHAR(50)"/>
+            <column name="card_type" type="VARCHAR(50)"/>
+            <column name="response_code" type="VARCHAR(10)"/>
+            <column name="pay_date" type="VARCHAR(20)"/>
+            <column name="paid_at" type="TIMESTAMP"/>
+            <column name="ip_address" type="VARCHAR(50)"/>
+            <column name="order_info" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="payments" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_payments_order"/>
+        <createIndex tableName="payments" indexName="idx_payments_order">
+            <column name="order_id"/>
+        </createIndex>
+        <createIndex tableName="payments" indexName="idx_payments_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="006-2-create-table-payment-transaction-logs" author="delivery">
+        <createTable tableName="payment_transaction_logs">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="payment_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="action" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="request_data" type="CLOB"/>
+            <column name="response_data" type="CLOB"/>
+            <column name="response_code" type="VARCHAR(10)"/>
+            <column name="message" type="VARCHAR(500)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="payment_transaction_logs" baseColumnNames="payment_id"
+                                 referencedTableName="payments" referencedColumnNames="id"
+                                 constraintName="fk_payment_logs_payment"/>
+    </changeSet>
+
+    <changeSet id="006-3-create-table-cod-settlements" author="delivery">
+        <createTable tableName="cod_settlements">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="shipper_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_cod_settlements_order"/>
+            </column>
+            <column name="amount" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="HOLDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collected_at" type="TIMESTAMP"/>
+            <column name="submitted_at" type="TIMESTAMP"/>
+            <column name="confirmed_at" type="TIMESTAMP"/>
+            <column name="confirmed_by_user_id" type="BIGINT"/>
+            <column name="note" type="VARCHAR(500)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="cod_settlements" baseColumnNames="shipper_id"
+                                 referencedTableName="shippers" referencedColumnNames="id"
+                                 constraintName="fk_cod_settlements_shipper"/>
+        <addForeignKeyConstraint baseTableName="cod_settlements" baseColumnNames="order_id"
+                                 referencedTableName="orders" referencedColumnNames="id"
+                                 constraintName="fk_cod_settlements_order"/>
+        <createIndex tableName="cod_settlements" indexName="idx_cod_settlements_shipper_status">
+            <column name="shipper_id"/>
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

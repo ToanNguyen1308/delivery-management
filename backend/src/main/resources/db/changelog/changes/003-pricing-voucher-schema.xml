@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="003-1-create-table-pricing-rules" author="delivery">
+        <createTable tableName="pricing_rules">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="service_type" type="VARCHAR(20)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_pricing_rules_service_type"/>
+            </column>
+            <column name="base_fee" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="base_distance_km" type="DECIMAL(6,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="per_km_fee" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="base_weight_kg" type="DECIMAL(6,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="per_kg_fee" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="remote_area_surcharge" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="cod_fee_percent" type="DECIMAL(5,2)" defaultValueNumeric="0"/>
+            <column name="min_fee" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="active" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003-2-create-table-vouchers" author="delivery">
+        <createTable tableName="vouchers">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_vouchers_code"/>
+            </column>
+            <column name="name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discount_type" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discount_value" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="min_order_amount" type="DECIMAL(12,2)" defaultValueNumeric="0"/>
+            <column name="max_discount_amount" type="DECIMAL(12,2)"/>
+            <column name="quantity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="used_count" type="INT" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="usage_limit_per_user" type="INT" defaultValueNumeric="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valid_from" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valid_to" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(20)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(500)"/>
+            <column name="version" type="BIGINT" defaultValueNumeric="0"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="vouchers" indexName="idx_vouchers_status_valid">
+            <column name="status"/>
+            <column name="valid_to"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="003-3-create-table-voucher-usages" author="delivery">
+        <createTable tableName="voucher_usages">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="voucher_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="BIGINT"/>
+            <column name="discount_amount" type="DECIMAL(12,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="used_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="created_by" type="VARCHAR(100)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="updated_by" type="VARCHAR(100)"/>
+            <column name="is_deleted" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="voucher_usages" baseColumnNames="voucher_id"
+                                 referencedTableName="vouchers" referencedColumnNames="id"
+                                 constraintName="fk_voucher_usages_voucher"/>
+        <addForeignKeyConstraint baseTableName="voucher_usages" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="id"
+                                 constraintName="fk_voucher_usages_user"/>
+        <createIndex tableName="voucher_usages" indexName="idx_voucher_usages_voucher_user">
+            <column name="voucher_id"/>
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

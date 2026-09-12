@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <!--
+        Tài khoản demo (mật khẩu đã băm bằng BCrypt cost 10):
+        admin / Admin@123
+        dispatcher / Dispatch@123
+        shipper01, shipper02, shipper03 / Shipper@123
+        customer01, customer02 / Customer@123
+    -->
+    <changeSet id="010-1-seed-demo-users" author="delivery">
+        <insert tableName="users">
+            <column name="username" value="admin"/>
+            <column name="password" value="$2a$10$.vxzQR4YHDHsKf19cIGvJu2L4VuLtPE.zTyIgLB3lBq373uQkGlea"/>
+            <column name="full_name" value="Quản trị viên hệ thống"/>
+            <column name="email" value="admin@delivery.vn"/>
+            <column name="phone_number" value="0900000001"/>
+            <column name="address" value="Số 1 Trần Hữu Dực, Nam Từ Liêm, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="dispatcher"/>
+            <column name="password" value="$2a$10$1aBKezlqyHAMPq3F.Ca2quwvfQTM5MHXtcx5hFmlbsvmNLsSM2E3q"/>
+            <column name="full_name" value="Trần Thị Điều Phối"/>
+            <column name="email" value="dispatcher@delivery.vn"/>
+            <column name="phone_number" value="0900000002"/>
+            <column name="address" value="Cầu Giấy, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="shipper01"/>
+            <column name="password" value="$2a$10$TWutcQe6QYp5IwfKbl42megR9GGjBzbLnfY.Xs6HbKlEt/DkdsL6O"/>
+            <column name="full_name" value="Nguyễn Văn Giao"/>
+            <column name="email" value="shipper01@delivery.vn"/>
+            <column name="phone_number" value="0911000001"/>
+            <column name="address" value="Hoàn Kiếm, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="shipper02"/>
+            <column name="password" value="$2a$10$TWutcQe6QYp5IwfKbl42megR9GGjBzbLnfY.Xs6HbKlEt/DkdsL6O"/>
+            <column name="full_name" value="Lê Minh Vận"/>
+            <column name="email" value="shipper02@delivery.vn"/>
+            <column name="phone_number" value="0911000002"/>
+            <column name="address" value="Đống Đa, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="shipper03"/>
+            <column name="password" value="$2a$10$TWutcQe6QYp5IwfKbl42megR9GGjBzbLnfY.Xs6HbKlEt/DkdsL6O"/>
+            <column name="full_name" value="Phạm Quốc Chuyển"/>
+            <column name="email" value="shipper03@delivery.vn"/>
+            <column name="phone_number" value="0911000003"/>
+            <column name="address" value="Long Biên, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="customer01"/>
+            <column name="password" value="$2a$10$ZwgYHLrC.zy6TInZfzPbjO8H9oMSPWeiNon0wEwa9UxIXqKXVetPC"/>
+            <column name="full_name" value="Nguyễn Đức Toàn"/>
+            <column name="email" value="customer01@gmail.com"/>
+            <column name="phone_number" value="0922000001"/>
+            <column name="address" value="144 Xuân Thủy, Cầu Giấy, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+        <insert tableName="users">
+            <column name="username" value="customer02"/>
+            <column name="password" value="$2a$10$ZwgYHLrC.zy6TInZfzPbjO8H9oMSPWeiNon0wEwa9UxIXqKXVetPC"/>
+            <column name="full_name" value="Hoàng Thị Mai"/>
+            <column name="email" value="customer02@gmail.com"/>
+            <column name="phone_number" value="0922000002"/>
+            <column name="address" value="25 Lý Thường Kiệt, Hoàn Kiếm, Hà Nội"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="created_by" value="system"/>
+            <column name="is_deleted" valueBoolean="false"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="010-2-map-demo-users-role-groups" author="delivery">
+        <sql>
+            INSERT INTO user_role_group (user_id, role_group_id)
+            SELECT u.id, rg.id FROM users u, role_groups rg
+            WHERE u.username = 'admin' AND rg.role_group_code = 'ADMIN'
+        </sql>
+        <sql>
+            INSERT INTO user_role_group (user_id, role_group_id)
+            SELECT u.id, rg.id FROM users u, role_groups rg
+            WHERE u.username = 'dispatcher' AND rg.role_group_code = 'DISPATCHER'
+        </sql>
+        <sql>
+            INSERT INTO user_role_group (user_id, role_group_id)
+            SELECT u.id, rg.id FROM users u, role_groups rg
+            WHERE u.username IN ('shipper01', 'shipper02', 'shipper03') AND rg.role_group_code = 'SHIPPER'
+        </sql>
+        <sql>
+            INSERT INTO user_role_group (user_id, role_group_id)
+            SELECT u.id, rg.id FROM users u, role_groups rg
+            WHERE u.username IN ('customer01', 'customer02') AND rg.role_group_code = 'CUSTOMER'
+        </sql>
+    </changeSet>
+
+    <changeSet id="010-3-seed-demo-shippers" author="delivery">
+        <sql>
+            INSERT INTO shippers (shipper_code, user_id, vehicle_type, license_plate, max_load_kg, zone,
+                                  status, current_latitude, current_longitude, rating, total_delivered,
+                                  total_failed, current_load, max_concurrent_orders, created_by, is_deleted)
+            SELECT 'SP00001', u.id, 'MOTORBIKE', '29H1-12345', 30, 'Hoàn Kiếm',
+                   'ONLINE', 21.0285000, 105.8542000, 4.80, 0, 0, 0, 5, 'system', false
+            FROM users u WHERE u.username = 'shipper01'
+        </sql>
+        <sql>
+            INSERT INTO shippers (shipper_code, user_id, vehicle_type, license_plate, max_load_kg, zone,
+                                  status, current_latitude, current_longitude, rating, total_delivered,
+                                  total_failed, current_load, max_concurrent_orders, created_by, is_deleted)
+            SELECT 'SP00002', u.id, 'MOTORBIKE', '29H1-67890', 30, 'Đống Đa',
+                   'ONLINE', 21.0136000, 105.8290000, 4.60, 0, 0, 0, 5, 'system', false
+            FROM users u WHERE u.username = 'shipper02'
+        </sql>
+        <sql>
+            INSERT INTO shippers (shipper_code, user_id, vehicle_type, license_plate, max_load_kg, zone,
+                                  status, current_latitude, current_longitude, rating, total_delivered,
+                                  total_failed, current_load, max_concurrent_orders, created_by, is_deleted)
+            SELECT 'SP00003', u.id, 'VAN', '29C-11111', 800, 'Long Biên',
+                   'OFFLINE', 21.0450000, 105.8900000, 4.90, 0, 0, 0, 8, 'system', false
+            FROM users u WHERE u.username = 'shipper03'
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
