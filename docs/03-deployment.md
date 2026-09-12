@@ -21,7 +21,7 @@ Không cần cài Java, Node hay PostgreSQL trên máy — mọi thứ chạy tr
 | Node.js | 20 trở lên |
 | PostgreSQL | 16 |
 | Redis | 7 (không bắt buộc, thiếu thì tắt cache) |
-| MinIO | Không bắt buộc, thiếu thì chỉ không upload được file |
+| MinIO | Cần khi upload ảnh. Docker đã có sẵn trong compose. Chạy local: `brew install minio minio-mc` rồi `bash scripts/dev-minio.sh start` |
 
 ## 2. Cấu hình biến môi trường
 
@@ -98,6 +98,13 @@ bash scripts/dev-db.sh reset    # xóa sạch, dựng lại từ đầu
 bash scripts/dev-db.sh stop     # tắt
 ```
 
+Để upload ảnh xác nhận giao hàng khi không dùng Docker, bật MinIO local (cài một lần bằng `brew install minio minio-mc`):
+
+```bash
+bash scripts/dev-minio.sh start
+bash scripts/dev-minio.sh stop
+```
+
 Script in ra sẵn lệnh chạy backend tương ứng. Nếu muốn dùng PostgreSQL có sẵn trên máy:
 
 ```bash
@@ -112,7 +119,9 @@ DB_PASSWORD=delivery_pass_2026 \
 mvn spring-boot:run
 ```
 
-Nếu chưa có Redis, thêm `SPRING_CACHE_TYPE=none MANAGEMENT_HEALTH_REDIS_ENABLED=false` để tắt cache và bỏ Redis khỏi healthcheck. Thiếu MinIO thì ứng dụng vẫn khởi động bình thường, chỉ ghi một dòng cảnh báo và không dùng được chức năng upload file.
+Nếu chưa có Redis, thêm `SPRING_CACHE_TYPE=none MANAGEMENT_HEALTH_REDIS_ENABLED=false` để tắt cache và bỏ Redis khỏi healthcheck. Thiếu MinIO thì ứng dụng vẫn khởi động, chỉ không upload được file — chạy `bash scripts/dev-minio.sh start` chứ không cần chuyển sang Docker.
+
+Mỗi lần chạy backend với instance ở cổng 55432 phải kèm đủ `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`. Chỉ gõ `mvn spring-boot:run` sẽ nối nhầm Postgres mặc định ở 5432.
 
 ### Frontend
 
@@ -204,7 +213,7 @@ Không cần sửa một dòng code Java nào.
 | Hiện tượng | Nguyên nhân và cách xử lý |
 | --- | --- |
 | Backend dừng với lỗi `Schema-validation` | Entity lệch với schema Liquibase. Chạy `docker compose down -v` rồi `up` lại để dựng schema mới |
-| `Failed to connect to localhost:9000` | Chưa chạy MinIO. Ứng dụng vẫn hoạt động, chỉ không upload được file |
+| `Failed to connect to localhost:9000` hoặc "Tải file lên thất bại" | Chưa chạy MinIO. Cách A: `bash scripts/dev-minio.sh start`. Cách B: MinIO đi cùng `docker compose up` |
 | Login trả 401 | Token hết hạn hoặc `JWT_SECRET` đã đổi sau khi phát token. Đăng nhập lại |
 | Bản đồ không hiển thị | Máy cần kết nối Internet để tải tile từ OpenStreetMap |
 | Không nhận được cập nhật realtime | Kiểm tra `GET /api/v1/ws/info` trả 200. Nếu dùng proxy riêng, phải cho phép header `Upgrade` |

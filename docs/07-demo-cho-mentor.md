@@ -10,25 +10,41 @@ Nếu cần đi sâu từng chức năng một, dùng [06-huong-dan-su-dung.md](
 
 ### 1. Dựng lại hệ thống từ dữ liệu sạch
 
+Chọn **một** trong hai cách. Chi tiết đầy đủ ở [05-huong-dan-cai-dat.md](05-huong-dan-cai-dat.md).
+
+**Cách B — Docker** (giao diện http://localhost:3000, MinIO có sẵn):
+
 ```bash
-docker compose down -v        # xóa sạch dữ liệu cũ
+docker compose down -v
 docker compose up -d --build
 ```
 
 Chờ tới khi `docker compose ps` báo `backend` là `healthy` (khoảng một phút, lần build đầu lâu hơn).
 
-Nếu máy chưa có Docker, chạy theo Cách A trong [05-huong-dan-cai-dat.md](05-huong-dan-cai-dat.md):
+**Cách A — chạy local, không Docker** (giao diện http://localhost:5173). MinIO **không tự lên** theo Postgres, phải bật riêng thì mới upload được ảnh xác nhận:
 
 ```bash
+brew install minio minio-mc
 bash scripts/dev-db.sh reset && bash scripts/dev-db.sh start
-# terminal 1
+bash scripts/dev-minio.sh start
+```
+
+Terminal 1 — dán **nguyên khối**, đừng chỉ gõ `mvn spring-boot:run` (thiếu `DB_URL` sẽ nối nhầm Postgres 5432):
+
+```bash
 cd backend && DB_URL="jdbc:postgresql://127.0.0.1:55432/delivery_db" \
   DB_USERNAME=delivery_user DB_PASSWORD=delivery_pass_2026 \
   SPRING_CACHE_TYPE=none MANAGEMENT_HEALTH_REDIS_ENABLED=false \
   mvn spring-boot:run
-# terminal 2
+```
+
+Terminal 2:
+
+```bash
 cd frontend && npm run dev
 ```
+
+**Địa chỉ giao diện:** Docker dùng http://localhost:3000. Cách A dùng http://localhost:5173. Các bước bên dưới viết `localhost:3000` — nếu đang chạy Cách A thì thay bằng `5173`.
 
 ### 2. Chạy thử một lượt để chắc chắn không hỏng
 
@@ -54,7 +70,8 @@ Kiểm tra đã tách phiên đúng chưa: đăng nhập cửa sổ A, rồi t�
 
 ### 4. Chuẩn bị sẵn
 
-- Một file ảnh bất kỳ trên desktop (dùng làm ảnh xác nhận giao hàng).
+- Một file ảnh **JPG / JPEG / PNG / WEBP** trên desktop (dùng làm ảnh xác nhận giao hàng). Ảnh iPhone `HEIC` sẽ bị từ chối.
+- Cách A: chắc chắn MinIO đang chạy (`bash scripts/dev-minio.sh status`). Nếu quên, tải ảnh sẽ báo "Tải file lên thất bại" dù file đúng định dạng.
 - Cho phép trình duyệt truy cập vị trí (bước chia sẻ GPS cần quyền này).
 - Kiểm tra máy có Internet — bản đồ cần tải tile từ OpenStreetMap.
 - Mở sẵn một tab Swagger: http://localhost:8080/api/v1/swagger-ui.html
@@ -167,7 +184,7 @@ Hệ thống sinh mã vận đơn dạng `DH260911XXXXXX`. **Ghi mã này ra gi�
 
 > "Ảnh được đẩy lên MinIO theo cấu trúc thư mục năm/tháng, database chỉ lưu metadata là object key, dung lượng và content type, không lưu nội dung file. Đơn chuyển sang Giao thành công và xuất hiện thêm dòng đối soát COD báo shipper đang giữ 500.000đ."
 
-Nếu mentor muốn kiểm chứng, mở http://localhost:9001 (`minioadmin` / `minioadmin123`) để thấy file thật.
+Nếu mentor muốn kiểm chứng, mở http://localhost:9001 (`minioadmin` / `minioadmin123`) để thấy file thật. Console này có ở cả Cách A (sau `bash scripts/dev-minio.sh start`) và Cách B (Docker).
 
 **Làm thêm nếu còn thời gian:** Chứng minh state machine chặn thao tác sai. Ở terminal:
 
@@ -255,6 +272,8 @@ bash scripts/smoke-test.sh    # 21 bước nghiệp vụ end-to-end
 | Bản đồ trắng | Mất Internet. Bỏ qua bản đồ, chuyển sang nói về timeline hành trình vẫn cập nhật realtime |
 | Trình duyệt không cho chia sẻ vị trí | Dùng nút đẩy toạ độ thủ công ở màn hình nhiệm vụ, hoặc chạy `node scripts/ws-check.mjs` để chứng minh luồng realtime |
 | Không thấy cập nhật realtime | Tải lại trang chi tiết đơn để STOMP kết nối lại |
-| Backend không phản hồi | `docker compose restart backend`, chờ khoảng 30 giây |
+| Backend không phản hồi | Docker: `docker compose restart backend`, chờ khoảng 30 giây. Cách A: xem terminal backend còn chạy không; nếu vừa gõ `mvn spring-boot:run` thiếu biến môi trường thì dán lại nguyên khối lệnh ở mục 1 |
+| Tải ảnh lên thất bại | Cách A chưa bật MinIO. Chạy `bash scripts/dev-minio.sh start` rồi tải lại. Không phải lỗi JPG |
+| Terminal frontend in `ws proxy` / `EPIPE` | Backend vừa tắt hoặc đang khởi động. Đợi `Started DeliveryApplication` rồi tải lại trang |
 | Quên mật khẩu tài khoản demo | Trang đăng nhập có 4 nút điền nhanh |
-| Muốn làm lại từ đầu | `docker compose down -v && docker compose up -d` |
+| Muốn làm lại từ đầu | Docker: `docker compose down -v && docker compose up -d`. Cách A: `bash scripts/dev-db.sh reset && bash scripts/dev-db.sh start`, rồi chạy lại backend kèm đủ biến môi trường |

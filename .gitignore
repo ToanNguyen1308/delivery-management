@@ -40,3 +40,6 @@ docker-data/
 
 # Cluster PostgreSQL tam cho moi truong phat trien (xem scripts/dev-db.sh)
 .tmp-pg/
+
+# Du lieu MinIO tam khi chay local, khong dung Docker (xem scripts/dev-minio.sh)
+.tmp-minio/

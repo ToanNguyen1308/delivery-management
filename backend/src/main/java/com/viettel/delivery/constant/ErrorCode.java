@@ -54,6 +54,7 @@ public final class ErrorCode {
     public static final String ORDER_NOT_PAID = "error.order.notPaid";
     public static final String ORDER_ALREADY_PAID = "error.order.alreadyPaid";
     public static final String ORDER_PROOF_REQUIRED = "error.order.proofRequired";
+    public static final String ORDER_STATUS_SHIPPER_ONLY = "error.order.statusShipperOnly";
 
     /* ---------- Dieu phoi ---------- */
     public static final String ASSIGNMENT_NOT_FOUND = "error.assignment.notFound";

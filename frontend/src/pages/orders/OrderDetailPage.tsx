@@ -32,7 +32,7 @@ import DeliveryMap, { MapPoint } from '@/components/common/DeliveryMap';
 import { fileApi, orderApi, paymentApi, trackingApi } from '@/api/services';
 import { useStomp } from '@/hooks/useStomp';
 import { useAuthStore } from '@/store/authStore';
-import { ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, PERMISSION } from '@/constants/permissions';
+import { ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, PERMISSION, ROLE_GROUP } from '@/constants/permissions';
 import { DETAIL_DESCRIPTIONS_COLUMN, DETAIL_DESCRIPTIONS_STYLES } from '@/constants/layout';
 import { formatDateTime, formatMoney, formatTime } from '@/utils/format';
 import type { EnumValue, Order, OrderStatusHistory, OrderTracking, Payment } from '@/types';
@@ -41,7 +41,7 @@ const OrderDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const orderId = Number(id);
   const navigate = useNavigate();
-  const { hasPermission } = useAuthStore();
+  const { hasPermission, hasRole } = useAuthStore();
 
   const [order, setOrder] = useState<Order | null>(null);
   const [history, setHistory] = useState<OrderStatusHistory[]>([]);
@@ -225,6 +225,8 @@ const OrderDetailPage = () => {
     hasPermission(PERMISSION.PAYMENT_CREATE) &&
     order.paymentMethod.code === 'VNPAY' &&
     order.paymentStatus.code !== 'PAID';
+  const canOperateDelivery = hasRole(ROLE_GROUP.SHIPPER);
+  const shipperStatuses = new Set(['PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'FAILED', 'RETURNED']);
 
   return (
     <div>
@@ -248,6 +250,7 @@ const OrderDetailPage = () => {
             )}
             {order.nextStatuses
               .filter((status) => !['CANCELLED', 'CONFIRMED'].includes(status.code))
+              .filter((status) => canOperateDelivery || !shipperStatuses.has(status.code))
               .map((status) => (
                 <Button key={status.code} onClick={() => setStatusTarget(status)}>
                   {status.description}

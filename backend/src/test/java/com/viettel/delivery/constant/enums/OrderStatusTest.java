@@ -69,6 +69,19 @@ class OrderStatusTest {
     }
 
     @Test
+    @DisplayName("Lay hang, giao hang va hoan tra la thao tac cua shipper")
+    void deliveryStatusesShouldBeShipperOperations() {
+        assertThat(OrderStatus.PICKED_UP.isShipperOperation()).isTrue();
+        assertThat(OrderStatus.IN_TRANSIT.isShipperOperation()).isTrue();
+        assertThat(OrderStatus.DELIVERED.isShipperOperation()).isTrue();
+        assertThat(OrderStatus.FAILED.isShipperOperation()).isTrue();
+        assertThat(OrderStatus.RETURNED.isShipperOperation()).isTrue();
+        assertThat(OrderStatus.CREATED.isShipperOperation()).isFalse();
+        assertThat(OrderStatus.CONFIRMED.isShipperOperation()).isFalse();
+        assertThat(OrderStatus.CANCELLED.isShipperOperation()).isFalse();
+    }
+
+    @Test
     @DisplayName("Tap trang thai dang xu ly khong chua trang thai ket thuc")
     void activeStatusesShouldExcludeFinalOnes() {
         assertThat(OrderStatus.activeStatuses())

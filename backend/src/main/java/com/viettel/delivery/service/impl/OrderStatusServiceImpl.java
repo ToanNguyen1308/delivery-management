@@ -3,6 +3,7 @@ package com.viettel.delivery.service.impl;
 import com.viettel.delivery.constant.ErrorCode;
 import com.viettel.delivery.constant.enums.CodSettlementStatus;
 import com.viettel.delivery.constant.enums.OrderStatus;
+import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.dto.request.OrderStatusUpdateRequest;
 import com.viettel.delivery.entity.Order;
 import com.viettel.delivery.entity.OrderStatusHistory;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -37,6 +39,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         OrderStatus current = order.getStatus();
         OrderStatus target = request.getStatus();
         validateTransition(current, target);
+        validateActor(order, target);
         validateRequiredData(order, request, target);
 
         applyStatusSideEffects(order, target, request);
@@ -67,6 +70,20 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         if (!current.canTransitionTo(target)) {
             throw new BusinessException(ErrorCode.ORDER_INVALID_TRANSITION,
                     current.getDescription(), target.getDescription());
+        }
+    }
+
+    private void validateActor(Order order, OrderStatus target) {
+        if (!target.isShipperOperation()) {
+            return;
+        }
+        CustomUserDetails user = SecurityUtil.requireCurrentUser();
+        if (!user.hasRoleGroup(RoleGroupCode.SHIPPER.name())) {
+            throw new BusinessException(ErrorCode.ORDER_STATUS_SHIPPER_ONLY, HttpStatus.FORBIDDEN);
+        }
+        Shipper shipper = order.getCurrentShipper();
+        if (shipper == null || shipper.getUser() == null || !user.getUserId().equals(shipper.getUser().getId())) {
+            throw new BusinessException(ErrorCode.ORDER_STATUS_SHIPPER_ONLY, HttpStatus.FORBIDDEN);
         }
     }
 

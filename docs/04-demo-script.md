@@ -4,12 +4,27 @@ Kịch bản này đi hết một vòng đời đơn hàng, từ lúc khách hà
 
 ## Chuẩn bị
 
+Chọn một cách. Chi tiết ở [05-huong-dan-cai-dat.md](05-huong-dan-cai-dat.md).
+
+**Docker** — giao diện http://localhost:3000:
+
 ```bash
 cp .env.example .env
 docker compose up -d --build
 ```
 
-Chờ khoảng một phút cho tới khi `docker compose ps` báo `backend` healthy, rồi mở http://localhost:3000.
+Chờ khoảng một phút cho tới khi `docker compose ps` báo `backend` healthy.
+
+**Cách A, không Docker** — giao diện http://localhost:5173. Phải bật MinIO riêng, nếu không bước tải ảnh xác nhận sẽ thất bại:
+
+```bash
+bash scripts/dev-db.sh start
+bash scripts/dev-minio.sh start
+```
+
+Rồi chạy backend kèm đủ `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` (không được chỉ gõ `mvn spring-boot:run`) và `cd frontend && npm run dev`.
+
+Các bước dưới đây viết `localhost:3000` — nếu đang chạy Cách A thì thay bằng `5173`.
 
 Nên mở sẵn 3 phiên đăng nhập độc lập. Lưu ý mở nhiều cửa sổ ẩn danh của cùng một trình duyệt là **không** tách được phiên, vì Chrome và Brave dùng chung một phiên ẩn danh cho mọi cửa sổ ẩn danh:
 
@@ -120,7 +135,7 @@ Quay lại tab 3, bấm lần lượt **Đã lấy hàng** rồi **Đang vận c
 
 Tab 3, bấm **Giao thành công**. Hộp thoại yêu cầu tải ảnh xác nhận giao hàng. Thử bấm Xác nhận khi chưa có ảnh — hệ thống báo "Cần có ảnh xác nhận giao hàng trước khi hoàn tất".
 
-Tải một ảnh bất kỳ lên. Ảnh được đưa lên MinIO theo cấu trúc `delivery-proof/2026/09/<uuid>.jpg`, database chỉ lưu metadata (object key, kích thước, content type, URL) chứ không lưu nội dung file. Có thể mở MinIO Console ở http://localhost:9001 để thấy file thật.
+Tải một ảnh JPG / PNG / WEBP. Ảnh được đưa lên MinIO theo cấu trúc `delivery-proof/2026/09/<uuid>.jpg`, database chỉ lưu metadata (object key, kích thước, content type, URL) chứ không lưu nội dung file. Có thể mở MinIO Console ở http://localhost:9001 (`minioadmin` / `minioadmin123`) để thấy file thật — Cách A cần `bash scripts/dev-minio.sh start` trước.
 
 Bấm Xác nhận. Đơn chuyển sang **Giao thành công**, xuất hiện thêm trường "Đối soát COD: Shipper đang giữ tiền" và ảnh xác nhận hiển thị ngay trong trang chi tiết.
 

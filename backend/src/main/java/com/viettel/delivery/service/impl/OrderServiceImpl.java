@@ -3,6 +3,7 @@ package com.viettel.delivery.service.impl;
 import com.viettel.delivery.constant.ErrorCode;
 import com.viettel.delivery.constant.PermissionCode;
 import com.viettel.delivery.constant.enums.OrderStatus;
+import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.dto.request.OrderCreateRequest;
 import com.viettel.delivery.dto.request.OrderItemRequest;
 import com.viettel.delivery.dto.request.OrderStatusUpdateRequest;
@@ -257,10 +258,21 @@ public class OrderServiceImpl implements OrderService {
                 .filter(item -> Boolean.FALSE.equals(item.getIsDeleted()))
                 .map(orderMapper::toItemResponse)
                 .toList());
+        boolean assignedShipper = isCurrentUserAssignedShipper(order);
         response.setNextStatuses(order.getStatus().nextStatuses().stream()
+                .filter(status -> !status.isShipperOperation() || assignedShipper)
                 .map(EnumResponse::of)
                 .toList());
         return response;
+    }
+
+    private boolean isCurrentUserAssignedShipper(Order order) {
+        return SecurityUtil.getCurrentUser()
+                .filter(user -> user.hasRoleGroup(RoleGroupCode.SHIPPER.name()))
+                .map(user -> order.getCurrentShipper() != null
+                        && order.getCurrentShipper().getUser() != null
+                        && user.getUserId().equals(order.getCurrentShipper().getUser().getId()))
+                .orElse(false);
     }
 
     /**

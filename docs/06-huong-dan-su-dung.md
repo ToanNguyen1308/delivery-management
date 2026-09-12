@@ -8,8 +8,8 @@ Nếu chỉ cần một kịch bản demo ngắn liền mạch để báo cáo m
 
 Khởi động hệ thống theo [05-huong-dan-cai-dat.md](05-huong-dan-cai-dat.md), rồi mở giao diện web:
 
-- Chạy bằng Docker: http://localhost:3000
-- Chạy trực tiếp khi phát triển: http://localhost:5173
+- Chạy bằng Docker: http://localhost:3000 (MinIO đã có trong compose)
+- Chạy trực tiếp khi phát triển: http://localhost:5173 — phải `bash scripts/dev-minio.sh start` thì mới tải được ảnh xác nhận giao hàng. Chi tiết ở [05-huong-dan-cai-dat.md](05-huong-dan-cai-dat.md) mục A.3
 
 ### Đăng nhập ba vai trò cùng lúc
 
@@ -87,7 +87,7 @@ Vào menu **Quản lý shipper** (`/shippers`):
 
 Cột **Tải hiện tại** hiển thị dạng `2/5`, nghĩa là đang giữ 2 đơn trên tối đa 5. Con số này được bộ điều phối dùng để quyết định có gán thêm đơn hay không.
 
-**Điểm kỹ thuật:** file không lưu trong database. Ảnh được đẩy lên MinIO theo cấu trúc thư mục theo năm/tháng, database chỉ giữ metadata (object key, dung lượng, content type). Mở MinIO Console tại http://localhost:9001 (`minioadmin` / `minioadmin123`) để thấy file thật nằm ở đó.
+**Điểm kỹ thuật:** file không lưu trong database. Ảnh được đẩy lên MinIO theo cấu trúc thư mục theo năm/tháng, database chỉ giữ metadata (object key, dung lượng, content type). Mở MinIO Console tại http://localhost:9001 (`minioadmin` / `minioadmin123`) để thấy file thật. Khi chạy local không Docker, bật MinIO bằng `bash scripts/dev-minio.sh start`; thiếu bước này thì toast "Tải file lên thất bại" dù ảnh là JPG hợp lệ. Chỉ nhận `jpg`, `jpeg`, `png`, `webp`.
 
 ---
 
@@ -113,7 +113,7 @@ Vào **Đơn hàng** (`/orders`). Bộ lọc gồm: mã vận đơn, tên/số �
 
 ### Chi tiết đơn
 
-Bấm vào một dòng để mở `/orders/:id`. Trang này gom đủ mọi thứ: thông tin đơn, bảng chi tiết cước, bản đồ hành trình, timeline sự kiện, lịch sử đổi trạng thái, ảnh xác nhận giao hàng, và các nút hành động hợp lệ tại thời điểm đó.
+Bấm vào một dòng để mở `/orders/:id`. Trang này gom đủ mọi thứ: thông tin đơn, bảng chi tiết cước, bản đồ hành trình, timeline sự kiện, lịch sử đổi trạng thái, ảnh xác nhận giao hàng, và các nút hành động hợp lệ **theo vai trò**. Khách hàng chỉ theo dõi và hủy đơn khi còn cho phép. Nút **Đã lấy hàng**, **Đang vận chuyển**, **Giao thành công**, **Giao thất bại** chỉ hiện với shipper được phân công đơn đó — backend cũng chặn nếu gọi thẳng API.
 
 ### Vòng đời trạng thái
 
@@ -234,7 +234,7 @@ Bên dưới bản đồ là **timeline hành trình**: mỗi lần đơn đổi
 
 ### Ảnh xác nhận giao hàng
 
-Khi shipper bấm **Giao thành công**, hệ thống **bắt buộc phải có ảnh xác nhận**. Thử bấm xác nhận khi chưa tải ảnh — hệ thống chặn lại. Ảnh sau khi tải lên được lưu vào MinIO và hiển thị ngay trong trang chi tiết đơn.
+Khi shipper bấm **Giao thành công**, hệ thống **bắt buộc phải có ảnh xác nhận**. Thử bấm xác nhận khi chưa tải ảnh — hệ thống chặn lại. Ảnh sau khi tải lên được lưu vào MinIO và hiển thị ngay trong trang chi tiết đơn. Chạy local không Docker thì MinIO phải đã bật (`bash scripts/dev-minio.sh start`); file phải là `jpg` / `jpeg` / `png` / `webp`.
 
 ### Tra cứu vận đơn công khai
 
@@ -433,7 +433,7 @@ Menu được dựng từ danh sách `function_code` mà backend trả về lúc
 
 Riêng **Nhiệm vụ của tôi** và **Ví COD** còn có thêm một điều kiện nữa là tài khoản phải thuộc nhóm shipper. Lý do: đây là màn hình cá nhân gắn với một hồ sơ shipper cụ thể, nên dù `admin` được cấp đủ 34 chức năng thì cũng không có hồ sơ shipper nào để hiển thị. Gõ thẳng `/my-tasks` bằng tài khoản `admin` sẽ bị đưa sang trang 403.
 
-**Thứ hai — chặn ở cả hai lớp.** Đang đăng nhập bằng `customer01`, gõ trực tiếp `http://localhost:3000/users` lên thanh địa chỉ. Hệ thống chuyển sang trang 403. Nhưng ẩn giao diện chưa đủ, nên backend cũng chặn độc lập:
+**Thứ hai — chặn ở cả hai lớp.** Đang đăng nhập bằng `customer01`, gõ thẳng `/users` lên thanh địa chỉ (Docker: `http://localhost:3000/users`, Cách A: `http://localhost:5173/users`). Hệ thống chuyển sang trang 403. Nhưng ẩn giao diện chưa đủ, nên backend cũng chặn độc lập:
 
 ```bash
 curl -s -X POST http://localhost:8080/api/v1/users/search \

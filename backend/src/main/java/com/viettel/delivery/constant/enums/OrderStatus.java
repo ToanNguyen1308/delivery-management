@@ -58,6 +58,14 @@ public enum OrderStatus implements BaseEnum {
         return this == CREATED || this == CONFIRMED;
     }
 
+    /**
+     * Cac buoc lay hang / giao hang / hoan tra chi shipper duoc phan cong moi duoc thao tac.
+     */
+    public boolean isShipperOperation() {
+        return this == PICKED_UP || this == IN_TRANSIT || this == DELIVERED
+                || this == FAILED || this == RETURNED;
+    }
+
     public static Set<OrderStatus> activeStatuses() {
         return EnumSet.of(CREATED, CONFIRMED, ASSIGNED, PICKED_UP, IN_TRANSIT);
     }

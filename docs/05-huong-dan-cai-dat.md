@@ -2,8 +2,8 @@
 
 Tài liệu này viết theo kiểu làm theo từng bước, dành cho hai tình huống:
 
-- **Cách A** — chạy trên máy bạn ngay bây giờ, không cần cài Docker (dùng đúng những thứ đã có sẵn trên máy).
-- **Cách B** — chạy bằng Docker, chỉ một lệnh duy nhất. Đây là cách để đưa project cho người khác (mentor, bạn cùng nhóm, máy chấm bài) chạy được mà không phải cài Java, Node hay PostgreSQL.
+- **Cách A** — chạy trên máy bạn ngay bây giờ, không cần Docker: Postgres riêng qua `scripts/dev-db.sh`, MinIO local qua `scripts/dev-minio.sh`, backend Maven, frontend Vite (`http://localhost:5173`).
+- **Cách B** — chạy bằng Docker, chỉ một lệnh duy nhất. Đây là cách để đưa project cho người khác (mentor, bạn cùng nhóm, máy chấm bài) chạy được mà không phải cài Java, Node hay PostgreSQL. Giao diện ở `http://localhost:3000`.
 
 Nếu chỉ cần tra cứu nhanh biến môi trường, cấu hình VNPay hay cách đổi sang MariaDB, xem [03-deployment.md](03-deployment.md).
 
@@ -73,7 +73,13 @@ Nếu máy khác còn thiếu, cài bằng Homebrew trên macOS:
 brew install openjdk@21 maven node postgresql@16
 ```
 
-Redis và MinIO **không bắt buộc**. Thiếu Redis thì tắt cache (thêm `SPRING_CACHE_TYPE=none`), thiếu MinIO thì ứng dụng vẫn khởi động bình thường, chỉ ghi một dòng cảnh báo trong log và không dùng được chức năng upload ảnh giao hàng.
+Nếu muốn demo **upload ảnh xác nhận giao hàng** (không dùng Docker), cài thêm MinIO local:
+
+```bash
+brew install minio minio-mc
+```
+
+Redis **không bắt buộc**. Thiếu Redis thì tắt cache (thêm `SPRING_CACHE_TYPE=none`). MinIO cũng không chặn ứng dụng khởi động, nhưng **không bật MinIO thì không tải được ảnh giao hàng** — toast trên giao diện là "Tải file lên thất bại", log backend là `Failed to connect to localhost:9000`. Không phải lỗi định dạng JPG.
 
 ### A.2. Chuẩn bị database
 
@@ -110,7 +116,29 @@ Dòng `GRANT ALL ON SCHEMA public` là bắt buộc với PostgreSQL 15 trở l�
 
 Bạn **không cần tạo bảng thủ công**. Liquibase tự chạy 34 changeset khi backend khởi động lần đầu, tạo toàn bộ schema cộng dữ liệu mẫu (nhóm quyền, danh sách chức năng, bảng phí, voucher, 7 tài khoản demo).
 
-### A.3. Chạy backend
+### A.3. Chạy MinIO local (cần khi upload ảnh)
+
+Ảnh xác nhận giao hàng được lưu trên MinIO, database chỉ giữ metadata. Cách A không dựng MinIO bằng Docker, nên phải bật một process MinIO ngay trên máy.
+
+```bash
+bash scripts/dev-minio.sh start
+```
+
+Script này bật MinIO ở cổng **9000**, console ở **9001**, tạo bucket `delivery-files` và cho phép đọc công khai (để xem ảnh trên giao diện). Dữ liệu nằm trong `.tmp-minio/` (đã gitignore).
+
+| Lệnh | Tác dụng |
+| --- | --- |
+| `bash scripts/dev-minio.sh status` | Xem đang chạy hay không |
+| `bash scripts/dev-minio.sh stop` | Tắt |
+| `bash scripts/dev-minio.sh start` | Bật (đã chạy thì bỏ qua, chỉ bảo đảm bucket còn) |
+
+Console: http://localhost:9001 (`minioadmin` / `minioadmin123`).
+
+Nên chạy bước này **trước** khi bật backend. Nếu backend đã chạy rồi mới bật MinIO thì **không cần tắt backend** — script đã tạo sẵn bucket, chỉ việc tải ảnh lại trên giao diện.
+
+Định dạng ảnh được nhận: `jpg`, `jpeg`, `png`, `webp`. Ảnh iPhone gốc `HEIC` hoặc file không có đuôi sẽ bị báo "Định dạng file không được hỗ trợ".
+
+### A.4. Chạy backend
 
 Mở **terminal thứ nhất**:
 
@@ -127,6 +155,8 @@ mvn spring-boot:run
 
 Nếu bạn chọn Lựa chọn 2 ở trên thì đổi `55432` thành `5432`. Nếu máy có Redis đang chạy thì bỏ hai dòng `SPRING_CACHE_TYPE` và `MANAGEMENT_HEALTH_REDIS_ENABLED` để bật cache trở lại.
 
+**Mỗi lần chạy backend phải dán nguyên khối lệnh trên.** Chỉ gõ `mvn spring-boot:run` thì ứng dụng nối vào Postgres mặc định ở cổng **5432** (không phải instance demo 55432) và thường chết với `password authentication failed for user "delivery_user"`.
+
 Backend sẵn sàng khi log hiện hai dòng này ở gần cuối:
 
 ```
@@ -141,16 +171,18 @@ curl http://localhost:8080/api/v1/actuator/health/liveness
 # {"status":"UP"}
 ```
 
-### A.3.1. Dòng log trông giống lỗi nhưng không phải lỗi
+### A.4.1. Dòng log trông giống lỗi nhưng không phải lỗi
 
-Chạy theo cách này, ở cuối log sẽ có đúng **một dòng `WARN`**:
+Nếu **chưa** chạy `bash scripts/dev-minio.sh start`, ở cuối log backend sẽ có một dòng `WARN`:
 
 ```
 WARN  com.viettel.delivery.config.MinioConfig
       - Khong the khoi tao bucket MinIO (http://localhost:9000): Failed to connect ...
 ```
 
-Đây là **hành vi cố ý**, không phải lỗi. Chỉ chức năng upload ảnh xác nhận giao hàng phụ thuộc MinIO, nên ứng dụng ghi một dòng cảnh báo rồi chạy tiếp thay vì dừng hẳn. Mọi chức năng còn lại hoạt động bình thường. Muốn dùng được upload thì chạy bằng Docker (Cách B), MinIO sẽ được dựng sẵn.
+Đây là **hành vi cố ý**, không phải lỗi khởi động. Ứng dụng vẫn chạy các chức năng khác. Chỉ upload ảnh bị hỏng. **Không cần chuyển sang Docker.** Chạy `bash scripts/dev-minio.sh start` rồi tải ảnh lại.
+
+Khi MinIO đã chạy trước lúc backend khởi động, dòng WARN này không còn.
 
 Về healthcheck: hai biến `SPRING_CACHE_TYPE=none` và `MANAGEMENT_HEALTH_REDIS_ENABLED=false` trong lệnh trên là để báo cho ứng dụng biết môi trường này không có Redis. Thiếu chúng, ứng dụng vẫn chạy được nhưng `curl /actuator/health` sẽ trả `DOWN` vì endpoint tổng hợp có kiểm tra Redis — khi đó hãy dùng `/actuator/health/liveness` (chỉ kiểm tra ứng dụng và database), cũng chính là endpoint mà Docker healthcheck dùng.
 
@@ -163,7 +195,7 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 # {"code":"success","message":"Đăng nhập thành công","data":{"accessToken":"eyJ..."}}
 ```
 
-### A.4. Chạy frontend
+### A.5. Chạy frontend
 
 Mở **terminal thứ hai**:
 
@@ -186,11 +218,12 @@ Mở trình duyệt tại **http://localhost:5173**. Màn hình đầu tiên ph�
 
 Vite đã cấu hình sẵn proxy: mọi request `/api` (kể cả WebSocket) được chuyển tiếp sang `http://localhost:8080`, nên bạn không cần cấu hình CORS gì thêm khi phát triển.
 
-### A.5. Tắt hệ thống
+### A.6. Tắt hệ thống
 
-Nhấn `Ctrl + C` ở cả hai terminal, sau đó:
+Nhấn `Ctrl + C` ở terminal backend và frontend, sau đó:
 
 ```bash
+bash scripts/dev-minio.sh stop
 bash scripts/dev-db.sh stop
 ```
 
@@ -416,7 +449,10 @@ và sửa phần `ports` của service `postgres` trong `docker-compose.yml` th�
 | `port is already allocated` | Cổng đang bị ứng dụng khác chiếm. Tìm bằng `lsof -i :8080` rồi tắt, hoặc đổi cổng trong `.env` |
 | Backend restart liên tục | Xem `docker compose logs backend`. Thường do database chưa sẵn sàng — chờ thêm một phút |
 | Lỗi `Schema-validation` khi khởi động | Schema cũ lệch với entity. Chạy `docker compose down -v` rồi `up` lại |
-| `Failed to connect to localhost:9000` | Chưa chạy MinIO. Ứng dụng vẫn hoạt động, chỉ không upload được ảnh giao hàng |
+| `Failed to connect to localhost:9000` hoặc toast "Tải file lên thất bại" | Cách A chưa bật MinIO. Chạy `bash scripts/dev-minio.sh start` rồi tải ảnh lại. Không cần Docker, không phải lỗi file JPG |
+| `Định dạng file không được hỗ trợ` | Chỉ nhận `jpg`, `jpeg`, `png`, `webp`. Ảnh iPhone `HEIC` phải xuất sang JPG trước |
+| `password authentication failed for user "delivery_user"` | Đã chạy `mvn spring-boot:run` thiếu biến `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`, nên nối nhầm Postgres cổng 5432. Dán lại nguyên khối lệnh ở mục A.4 |
+| `ws proxy socket error` / `ECONNREFUSED` trên terminal frontend | Backend chưa chạy hoặc vừa restart. Đợi log `Started DeliveryApplication` rồi tải lại trang trình duyệt |
 | Đăng nhập trả 401 | Token hết hạn hoặc `JWT_SECRET` đã bị đổi sau khi phát token. Đăng nhập lại |
 | Bản đồ trắng, không hiện đường | Máy cần Internet để tải tile bản đồ từ OpenStreetMap |
 | Không thấy cập nhật realtime | Kiểm tra `curl http://localhost:8080/api/v1/ws/info` phải trả về 200 |
