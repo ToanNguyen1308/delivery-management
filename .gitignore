@@ -43,3 +43,14 @@ docker-data/
 
 # Du lieu MinIO tam khi chay local, khong dung Docker (xem scripts/dev-minio.sh)
 .tmp-minio/
+
+# Tai lieu noi bo, khong public
+docs/03-deployment.md
+docs/04-demo-script.md
+docs/05-huong-dan-cai-dat.md
+docs/06-huong-dan-su-dung.md
+docs/07-demo-cho-mentor.md
+docs/08-kich-ban-video-demo.md
+
+# De bai / tai lieu thuc tap, khong dua len GitHub
+TTS Java TTCN.xlsx
