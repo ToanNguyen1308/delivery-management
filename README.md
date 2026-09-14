@@ -1,8 +1,8 @@
-# Delivery Management
+I. Đề tài
 
-Hệ thống quản lý giao hàng: tạo đơn, tính cước, phân công shipper, theo dõi hành trình realtime, thanh toán VNPay/COD và đối soát tiền thu hộ.
+Hệ thống quản lý giao hàng (Delivery Management): tạo đơn, tính cước, phân công shipper, theo dõi hành trình realtime, thanh toán VNPay/COD và đối soát tiền thu hộ.
 
-## Công nghệ
+II. Công nghệ
 
 | Thành phần | Công nghệ |
 | --- | --- |
@@ -10,7 +10,7 @@ Hệ thống quản lý giao hàng: tạo đơn, tính cước, phân công ship
 | Frontend | React 18, TypeScript, Vite, Ant Design, Leaflet, Recharts |
 | Hạ tầng | PostgreSQL 16, Redis 7, MinIO, Docker Compose |
 
-## Chức năng
+III. Chức năng
 
 - Quản lý người dùng, đăng nhập JWT (refresh token, thu hồi token qua Redis) và phân quyền theo `function_code`
 - Quản lý hồ sơ shipper, tải hiện tại và hiệu suất
@@ -24,7 +24,7 @@ Hệ thống quản lý giao hàng: tạo đơn, tính cước, phân công ship
 
 Phân quyền 3 lớp: ẩn menu ở frontend, `@PreAuthorize` ở API, lọc dữ liệu ở tầng truy vấn.
 
-## Chạy bằng Docker
+IV. Chạy bằng Docker
 
 ```bash
 cp .env.example .env
@@ -47,7 +47,7 @@ rồi chạy lại `docker compose up -d`. Không cần copy `.env.example` lầ
 
 Đợi `docker compose ps` báo `backend` là `healthy` trước khi đăng nhập.
 
-## Tài khoản demo
+V. Tài khoản demo
 
 | Tài khoản | Mật khẩu | Vai trò |
 | --- | --- | --- |
@@ -56,12 +56,12 @@ rồi chạy lại `docker compose up -d`. Không cần copy `.env.example` lầ
 | `shipper02` | `Shipper@123` | Shipper |
 | `customer01` | `Customer@123` | Khách hàng |
 
-## Tài liệu
+VI. Tài liệu
 
 - [Tài liệu kỹ thuật](docs/technical-design.md) — kiến trúc, ERD, state machine, luồng nghiệp vụ
 - [API reference](docs/api-reference.md) — endpoint và quyền truy cập
 
-## Cấu trúc
+VII. Cấu trúc
 
 ```
 backend/            Spring Boot API
