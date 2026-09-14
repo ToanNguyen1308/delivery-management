@@ -9,6 +9,7 @@ import com.viettel.delivery.dto.request.RefreshTokenRequest;
 import com.viettel.delivery.dto.request.RegisterRequest;
 import com.viettel.delivery.dto.response.LoginResponse;
 import com.viettel.delivery.dto.response.UserResponse;
+import com.viettel.delivery.entity.FunctionEntity;
 import com.viettel.delivery.entity.RefreshToken;
 import com.viettel.delivery.entity.RoleGroup;
 import com.viettel.delivery.entity.User;
@@ -109,8 +110,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ErrorCode.USER_INACTIVE, HttpStatus.FORBIDDEN);
         }
 
-        // Xoay vong refresh token: token cu bi thu hoi ngay khi cap token moi
-        stored.setRevoked(Boolean.TRUE);
+        stored.setRevoked(Boolean.TRUE); // thu hồi refresh token cũ khi cấp token mới
         return buildLoginResponse(user, CustomUserDetails.from(user));
     }
 
@@ -130,7 +130,14 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse getCurrentProfile() {
         User user = userRepository.findByIdWithAuthorities(SecurityUtil.getCurrentUserId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toResponse(user);
+        UserResponse response = userMapper.toResponse(user);
+        response.setPermissions(user.getRoleGroups().stream()
+                .flatMap(roleGroup -> roleGroup.getFunctions().stream())
+                .map(FunctionEntity::getFunctionCode)
+                .distinct()
+                .sorted()
+                .toList());
+        return response;
     }
 
     @Override

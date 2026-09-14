@@ -59,7 +59,7 @@ public class NotificationEventListener {
         notificationService.notifyUser(event.customerId(), type, title, content,
                 REFERENCE_TYPE_ORDER, event.orderId(), event.orderCode());
 
-        // Shipper cung can biet khi don bi huy hoac bi thu hoi khoi minh
+        // Shipper cũng cần biết khi đơn bị hủy
         if (event.shipperUserId() != null && OrderStatus.CANCELLED.equals(event.toStatus())) {
             notificationService.notifyUser(event.shipperUserId(), type, title, content,
                     REFERENCE_TYPE_ORDER, event.orderId(), event.orderCode());

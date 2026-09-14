@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Doc JWT tu header Authorization va nap thong tin nguoi dung vao SecurityContext.
+ * Đọc JWT từ header Authorization rồi gắn vào SecurityContext.
  */
 @Slf4j
 @Component
@@ -57,13 +57,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     ? List.of()
                     : authorityCodes.stream().map(SimpleGrantedAuthority::new).toList();
 
+            @SuppressWarnings("unchecked")
+            List<String> roleGroupCodes = claims.get(AppConstants.CLAIM_ROLE_GROUPS, List.class);
+
+            String fullName = claims.get(AppConstants.CLAIM_FULL_NAME, String.class);
             CustomUserDetails principal = new CustomUserDetails(
                     claims.get(AppConstants.CLAIM_USER_ID, Number.class).longValue(),
                     claims.getSubject(),
                     null,
-                    claims.getSubject(),
+                    StringUtils.hasText(fullName) ? fullName : claims.getSubject(),
                     true,
-                    Set.of(),
+                    roleGroupCodes == null ? Set.of() : Set.copyOf(roleGroupCodes),
                     authorities);
 
             UsernamePasswordAuthenticationToken authentication =
@@ -81,8 +85,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(header) && header.startsWith(AppConstants.TOKEN_PREFIX)) {
             return header.substring(AppConstants.TOKEN_PREFIX.length());
         }
-        // WebSocket handshake qua SockJS khong gui duoc header, cho phep truyen qua query param
-        String tokenParam = request.getParameter("access_token");
-        return StringUtils.hasText(tokenParam) ? tokenParam : null;
+        // Chỉ SockJS handshake mới đọc token từ query — tránh lộ JWT trên mọi API
+        if (request.getRequestURI().contains(AppConstants.WS_ENDPOINT)) {
+            String tokenParam = request.getParameter("access_token");
+            return StringUtils.hasText(tokenParam) ? tokenParam : null;
+        }
+        return null;
     }
 }

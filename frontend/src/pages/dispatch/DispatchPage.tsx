@@ -41,7 +41,6 @@ const DispatchPage = () => {
     void load();
   }, [load]);
 
-  // Cap nhat vi tri shipper tren ban do khi co ban tin moi
   const subscriptions = useMemo(
     () => [
       {

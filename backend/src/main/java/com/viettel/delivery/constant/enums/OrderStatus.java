@@ -9,9 +9,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Trang thai don hang kem bang chuyen tiep hop le (state machine).
- */
+/** Trạng thái đơn hàng kèm bảng chuyển tiếp hợp lệ. */
 @Getter
 @RequiredArgsConstructor
 public enum OrderStatus implements BaseEnum {
@@ -58,9 +56,7 @@ public enum OrderStatus implements BaseEnum {
         return this == CREATED || this == CONFIRMED;
     }
 
-    /**
-     * Cac buoc lay hang / giao hang / hoan tra chi shipper duoc phan cong moi duoc thao tac.
-     */
+    /** Chỉ shipper được phân công mới thao tác lấy hàng / giao / hoàn. */
     public boolean isShipperOperation() {
         return this == PICKED_UP || this == IN_TRANSIT || this == DELIVERED
                 || this == FAILED || this == RETURNED;

@@ -24,18 +24,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private final CorsProperties corsProperties;
 
     /**
-     * Cac tac vu chay ngoai request (job dinh ky, listener bat dong bo) khong co header
-     * Accept-Language nen phai dat san ngon ngu mac dinh, neu khong Spring se lay locale
-     * cua he dieu hanh va sinh ra thong bao sai ngon ngu.
+     * Job/listener không có header Accept-Language nên phải set locale mặc định,
+     * nếu không Spring lấy locale OS và thông báo sai ngôn ngữ.
      */
     @PostConstruct
     public void applyDefaultLocale() {
         LocaleContextHolder.setDefaultLocale(VIETNAMESE);
     }
 
-    /**
-     * Ngon ngu thong bao loi lay theo header Accept-Language, mac dinh tieng Viet.
-     */
+    /** Ngôn ngữ thông báo theo Accept-Language, mặc định tiếng Việt. */
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();

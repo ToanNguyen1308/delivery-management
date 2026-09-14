@@ -79,6 +79,6 @@ public class Payment extends BaseEntity {
     private String orderInfo;
 
     public boolean isFinalized() {
-        return PaymentStatus.PAID.equals(status) || PaymentStatus.FAILED.equals(status);
+        return PaymentStatus.PAID.equals(status);
     }
 }

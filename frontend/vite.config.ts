@@ -4,9 +4,7 @@ import path from 'node:path';
 
 export default defineConfig({
   plugins: [react()],
-  // sockjs-client la thu vien CommonJS viet cho Node nen co tham chieu bien `global`,
-  // von khong ton tai tren trinh duyet. Khong khai bao thi app chet ngay khi nap module
-  // va man hinh trang tron. Anh xa sang globalThis la cach xu ly chuan cho Vite.
+  // sockjs-client dùng biến Node `global`; map sang globalThis để không trắng màn hình
   define: {
     global: 'globalThis',
   },
@@ -17,8 +15,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // Khi chay dev, goi thang sang backend de khong phai bat CORS rieng.
-    // ws: true de handshake WebSocket tai /api/v1/ws di qua duoc proxy.
+    // Dev: proxy /api sang backend, ws: true để SockJS handshake đi qua
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
@@ -32,7 +29,6 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Tach thu vien lon thanh chunk rieng de trinh duyet cache lau hon
         manualChunks: {
           react: ['react', 'react-dom', 'react-router-dom'],
           antd: ['antd', '@ant-design/icons'],

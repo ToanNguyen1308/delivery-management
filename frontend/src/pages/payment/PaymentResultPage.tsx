@@ -6,9 +6,7 @@ import { formatMoney } from '@/utils/format';
 import type { PaymentResult } from '@/types';
 
 /**
- * Trang nhan ket qua tu cong thanh toan. VNPay chuyen huong nguoi dung ve day
- * kem toan bo tham so vnp_*, frontend gui lai backend de xac thuc chu ky.
- * Khi he thong chay o che do gia lap, trang nay hien thi hai lua chon de demo.
+ * Trang nhận kết quả VNPay: gửi lại toàn bộ vnp_* cho backend xác thực chữ ký.
  */
 const PaymentResultPage = () => {
   const [searchParams] = useSearchParams();

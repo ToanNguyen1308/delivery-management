@@ -3,7 +3,7 @@ package com.viettel.delivery.constant;
 import java.math.BigDecimal;
 
 /**
- * Hang so dung chung toan he thong. Khong hard-code magic number/string trong service.
+ * Hằng số dùng chung. Không hard-code magic number/string trong service.
  */
 public final class AppConstants {
 
@@ -14,11 +14,13 @@ public final class AppConstants {
     public static final String RESPONSE_CODE_SUCCESS = "success";
     public static final String RESPONSE_MESSAGE_SUCCESS = "Success";
 
-    /* ---------- Bao mat ---------- */
+    /* ---------- Bảo mật ---------- */
     public static final String AUTH_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String CLAIM_USER_ID = "uid";
     public static final String CLAIM_AUTHORITIES = "authorities";
+    public static final String CLAIM_ROLE_GROUPS = "roleGroups";
+    public static final String CLAIM_FULL_NAME = "fn";
     public static final String CLAIM_TOKEN_TYPE = "typ";
     public static final String TOKEN_TYPE_ACCESS = "access";
     public static final String TOKEN_TYPE_REFRESH = "refresh";
@@ -30,7 +32,7 @@ public final class AppConstants {
     public static final String CACHE_DASHBOARD = "dashboard";
     public static final String CACHE_PRICING = "pricing";
 
-    /* ---------- Phan trang ---------- */
+    /* ---------- Phân trang ---------- */
     public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_PAGE_SIZE = 10;
     public static final int MAX_PAGE_SIZE = 200;
@@ -51,7 +53,7 @@ public final class AppConstants {
     public static final String MINIO_FOLDER_SHIPPER_DOCUMENT = "shipper-document";
     public static final String MINIO_FOLDER_AVATAR = "avatar";
 
-    /* ---------- Nghiep vu ---------- */
+    /* ---------- Nghiệp vụ ---------- */
     public static final String ORDER_CODE_PREFIX = "DH";
     public static final String PAYMENT_TXN_PREFIX = "TXN";
     public static final double EARTH_RADIUS_KM = 6371.0;

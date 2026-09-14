@@ -146,7 +146,7 @@ public class VoucherServiceImpl implements VoucherService {
             return;
         }
 
-        // Nap lai trong transaction hien tai de @Version phat huy tac dung chong tru trung luot
+        // Load lại trong transaction hiện tại để @Version chặn dùng trùng lượt
         Voucher voucher = voucherRepository.findByIdAndIsDeletedFalse(result.voucher().getId())
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.VOUCHER_NOT_FOUND));
         if (!voucher.hasRemainingQuantity()) {

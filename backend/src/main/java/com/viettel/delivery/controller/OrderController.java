@@ -108,9 +108,9 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize(PermissionCode.HAS_ORDER_VIEW)
-    @Operation(summary = "Cap nhat trang thai don hang",
-            description = "Chi chap nhan cac buoc chuyen hop le theo state machine cua don hang")
+    @PreAuthorize(PermissionCode.HAS_SHIPPER_SELF)
+    @Operation(summary = "Shipper cap nhat trang thai giao hang",
+            description = "Chi shipper duoc phan cong moi duoc lay hang / giao / hoan. Xac nhan, huy, phan cong di API rieng")
     public ResponseEntity<ApiResponse<OrderResponse>> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody OrderStatusUpdateRequest request) {

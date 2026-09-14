@@ -1,4 +1,4 @@
-/** Danh sach function_code khop voi PermissionCode.java o backend. */
+/** function_code khớp PermissionCode.java ở backend. */
 export const PERMISSION = {
   USER_VIEW: 'ROLE_USER_VIEW',
   USER_CREATE: 'ROLE_USER_CREATE',
@@ -51,7 +51,6 @@ export const ROLE_GROUP = {
   CUSTOMER: 'CUSTOMER',
 } as const;
 
-/** Mau hien thi cho tung trang thai don hang tren the Tag cua Ant Design. */
 export const ORDER_STATUS_COLOR: Record<string, string> = {
   CREATED: 'default',
   CONFIRMED: 'blue',

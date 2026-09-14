@@ -1,6 +1,7 @@
 package com.viettel.delivery.controller;
 
 import com.viettel.delivery.constant.PermissionCode;
+import com.viettel.delivery.dto.request.ResetPasswordRequest;
 import com.viettel.delivery.dto.request.UserCreateRequest;
 import com.viettel.delivery.dto.request.UserUpdateRequest;
 import com.viettel.delivery.dto.response.ApiResponse;
@@ -12,8 +13,6 @@ import com.viettel.delivery.util.MessageUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -84,8 +82,8 @@ public class UserController {
     @Operation(summary = "Dat lai mat khau cho nguoi dung")
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @PathVariable Long id,
-            @RequestParam @NotBlank @Size(min = 6, max = 100) String newPassword) {
-        userService.resetPassword(id, newPassword);
+            @Valid @RequestBody ResetPasswordRequest request) {
+        userService.resetPassword(id, request.getNewPassword());
         return ResponseEntity.ok(ApiResponse.success(messageUtil.get("success.common.updated")));
     }
 }

@@ -119,6 +119,9 @@ public class CodSettlementServiceImpl implements CodSettlementService {
     public CodSettlementResponse confirm(Long settlementId, String note) {
         CodSettlement settlement = codSettlementRepository.findByIdWithDetails(settlementId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.COD_SETTLEMENT_NOT_FOUND));
+        if (!CodSettlementStatus.SUBMITTED.equals(settlement.getStatus())) {
+            throw new BusinessException(ErrorCode.COD_INVALID_STATUS);
+        }
 
         settlement.setStatus(CodSettlementStatus.CONFIRMED);
         settlement.setConfirmedAt(LocalDateTime.now());

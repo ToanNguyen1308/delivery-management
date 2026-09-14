@@ -48,9 +48,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      /**
-       * Goi khi tai lai trang: neu token con hieu luc thi lay lai ho so nguoi dung.
-       */
       restoreSession: async () => {
         const token = localStorage.getItem(STORAGE_KEYS.accessToken);
         if (!token) {
@@ -59,8 +56,15 @@ export const useAuthStore = create<AuthState>()(
         }
         try {
           const user = await authApi.me();
-          set({ user, initialized: true });
+          set({
+            user,
+            permissions: user.permissions ?? [],
+            roleGroups: user.roleGroups?.map((group) => group.roleGroupCode) ?? [],
+            initialized: true,
+          });
         } catch {
+          localStorage.removeItem(STORAGE_KEYS.accessToken);
+          localStorage.removeItem(STORAGE_KEYS.refreshToken);
           set({ user: null, permissions: [], roleGroups: [], initialized: true });
         }
       },

@@ -23,10 +23,14 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  if (config.data instanceof FormData) {
+    // Axios mặc định JSON; để trình duyệt tự gắn boundary cho multipart
+    config.headers.delete('Content-Type');
+  }
   return config;
 });
 
-/** Hang doi cac request bi 401 trong luc dang lam moi token, tranh goi refresh nhieu lan. */
+/** Hàng đợi request 401 trong lúc refresh token, tránh gọi refresh nhiều lần. */
 let isRefreshing = false;
 let pendingQueue: { resolve: (token: string) => void; reject: (error: unknown) => void }[] = [];
 
@@ -35,11 +39,7 @@ const flushQueue = (error: unknown, token?: string) => {
   pendingQueue = [];
 };
 
-/**
- * Mot man hinh thuong goi nhieu API song song. Khi ca nhom cung that bai vi cung mot ly do
- * (vi du tai khoan khong co ho so shipper), nguoi dung se thay nhieu toast giong het nhau
- * chong len nhau. Chi hien lai mot thong bao neu no vua xuat hien trong 3 giay gan day.
- */
+/** Gom toast lỗi trùng trong 3 giây (một màn thường gọi nhiều API song song). */
 const ERROR_DEDUPE_MS = 3000;
 const recentErrors = new Map<string, number>();
 
@@ -70,6 +70,11 @@ apiClient.interceptors.response.use(
   async (error: AxiosError<ApiResponse<unknown>>) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retried?: boolean };
     const status = error.response?.status;
+    const requestUrl = originalRequest?.url ?? '';
+
+    if (status === 401 && requestUrl.includes('/payments/vnpay/return')) {
+      return Promise.reject(error);
+    }
 
     if (status === 401 && originalRequest && !originalRequest._retried) {
       const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
@@ -123,7 +128,7 @@ apiClient.interceptors.response.use(
   },
 );
 
-/** Boc tach truong data trong ApiResponse de tang code goi API gon hon. */
+/** Lấy `data` trong ApiResponse. */
 export const unwrap = <T>(response: AxiosResponse<ApiResponse<T>>): T => response.data.data;
 
 export default apiClient;

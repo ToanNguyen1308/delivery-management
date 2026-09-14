@@ -3,7 +3,6 @@ package com.viettel.delivery.service.impl;
 import com.viettel.delivery.constant.ErrorCode;
 import com.viettel.delivery.constant.PermissionCode;
 import com.viettel.delivery.constant.enums.OrderStatus;
-import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.dto.request.OrderCreateRequest;
 import com.viettel.delivery.dto.request.OrderItemRequest;
 import com.viettel.delivery.dto.request.OrderStatusUpdateRequest;
@@ -47,6 +46,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -118,6 +118,9 @@ public class OrderServiceImpl implements OrderService {
 
         VoucherDiscountResult voucherResult =
                 voucherService.evaluate(request.getVoucherCode(), breakdown.shippingFee(), customerId);
+        if (StringUtils.hasText(request.getVoucherCode()) && !voucherResult.applied()) {
+            throw new BusinessException(voucherResult.messageCode());
+        }
 
         Order order = buildOrder(request, customer, distanceKm, breakdown, voucherResult);
         attachItems(order, request.getItems());
@@ -153,6 +156,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse updateStatus(Long id, OrderStatusUpdateRequest request) {
+        if (!request.getStatus().isShipperOperation()) {
+            throw new BusinessException(ErrorCode.ORDER_STATUS_SHIPPER_ONLY, HttpStatus.FORBIDDEN);
+        }
         Order order = getAccessibleOrder(id);
         orderStatusService.changeStatus(order, request);
         return toDetailResponse(order);
@@ -260,24 +266,32 @@ public class OrderServiceImpl implements OrderService {
                 .toList());
         boolean assignedShipper = isCurrentUserAssignedShipper(order);
         response.setNextStatuses(order.getStatus().nextStatuses().stream()
-                .filter(status -> !status.isShipperOperation() || assignedShipper)
+                .filter(status -> visibleNextStatus(status, assignedShipper))
                 .map(EnumResponse::of)
                 .toList());
         return response;
     }
 
+    private boolean visibleNextStatus(OrderStatus status, boolean assignedShipper) {
+        if (status.isShipperOperation()) {
+            return assignedShipper;
+        }
+        if (status == OrderStatus.ASSIGNED) {
+            return SecurityUtil.hasAuthority(PermissionCode.DISPATCH_ASSIGN);
+        }
+        return true;
+    }
+
     private boolean isCurrentUserAssignedShipper(Order order) {
         return SecurityUtil.getCurrentUser()
-                .filter(user -> user.hasRoleGroup(RoleGroupCode.SHIPPER.name()))
+                .filter(CustomUserDetails::isShipper)
                 .map(user -> order.getCurrentShipper() != null
                         && order.getCurrentShipper().getUser() != null
                         && user.getUserId().equals(order.getCurrentShipper().getUser().getId()))
                 .orElse(false);
     }
 
-    /**
-     * Khach hang chi duoc xem don cua minh, shipper chi duoc xem don duoc phan cong.
-     */
+    /** Khách hàng chỉ xem đơn mình tạo, shipper chỉ xem đơn được phân công. */
     private void verifyAccess(Order order) {
         DataScope scope = resolveDataScope();
         if (scope.customerId() != null && !scope.customerId().equals(order.getCustomer().getId())) {
@@ -315,9 +329,6 @@ public class OrderServiceImpl implements OrderService {
         return code;
     }
 
-    /**
-     * Gioi han pham vi du lieu duoc phep truy cap cua nguoi dang dang nhap.
-     */
     private record DataScope(Long customerId, Long shipperId) {
     }
 }

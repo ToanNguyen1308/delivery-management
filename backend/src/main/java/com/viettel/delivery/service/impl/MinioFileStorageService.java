@@ -39,6 +39,11 @@ public class MinioFileStorageService implements FileStorageService {
     private static final DateTimeFormatter FOLDER_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM");
     private static final List<String> ALLOWED_EXTENSIONS =
             List.of("jpg", "jpeg", "png", "webp", "pdf", "xlsx", "xls");
+    private static final List<String> ALLOWED_FEATURES = List.of(
+            AppConstants.MINIO_TEMP_FOLDER,
+            AppConstants.MINIO_FOLDER_DELIVERY_PROOF,
+            AppConstants.MINIO_FOLDER_SHIPPER_DOCUMENT,
+            AppConstants.MINIO_FOLDER_AVATAR);
 
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
@@ -149,7 +154,11 @@ public class MinioFileStorageService implements FileStorageService {
     }
 
     private String buildObjectKey(String feature, String extension) {
-        return "%s/%s/%s.%s".formatted(feature, LocalDate.now().format(FOLDER_FORMAT),
+        String folder = ALLOWED_FEATURES.stream()
+                .filter(allowed -> allowed.equalsIgnoreCase(feature))
+                .findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.FILE_FEATURE_NOT_ALLOWED));
+        return "%s/%s/%s.%s".formatted(folder, LocalDate.now().format(FOLDER_FORMAT),
                 UUID.randomUUID().toString().replace("-", ""), extension);
     }
 

@@ -59,8 +59,7 @@ public class VnPayGateway implements PaymentGateway {
         params.put("vnp_Version", vnPayProperties.version());
         params.put("vnp_Command", vnPayProperties.command());
         params.put("vnp_TmnCode", vnPayProperties.tmnCode());
-        // VNPay nhan so tien nhan 100 va khong co phan thap phan
-        params.put("vnp_Amount", toVnPayAmount(payment.getAmount()));
+        params.put("vnp_Amount", toVnPayAmount(payment.getAmount())); // VNPay: số tiền × 100, không thập phân
         params.put("vnp_CurrCode", vnPayProperties.currencyCode());
         params.put("vnp_TxnRef", payment.getTxnRef());
         params.put("vnp_OrderInfo", payment.getOrderInfo());

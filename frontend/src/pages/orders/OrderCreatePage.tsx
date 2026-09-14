@@ -23,10 +23,7 @@ import { orderApi, pricingApi } from '@/api/services';
 import { formatMoney } from '@/utils/format';
 import type { FeePreview } from '@/types';
 
-/**
- * Toa do mau cua mot so quan tai Ha Noi, giup dien nhanh khi demo
- * vi he thong chua tich hop dich vu geocoding.
- */
+/** Tọa độ mẫu một số quận Hà Nội — hệ thống chưa có geocoding. */
 const DISTRICT_PRESETS = [
   { label: 'Cầu Giấy, Hà Nội', district: 'Cầu Giấy', province: 'Hà Nội', latitude: 21.0313, longitude: 105.7967 },
   { label: 'Hoàn Kiếm, Hà Nội', district: 'Hoàn Kiếm', province: 'Hà Nội', latitude: 21.0285, longitude: 105.8542 },

@@ -32,7 +32,7 @@ import type {
   Voucher,
 } from '@/types';
 
-/* ================= Xac thuc ================= */
+/* ---------- Xác thực ---------- */
 export const authApi = {
   login: (username: string, password: string) =>
     apiClient.post('/auth/login', { username, password }).then(unwrap<LoginResponse>),
@@ -44,7 +44,7 @@ export const authApi = {
     apiClient.post('/auth/change-password', { oldPassword, newPassword }).then(() => undefined),
 };
 
-/* ================= Nguoi dung & nhom quyen ================= */
+/* ---------- Người dùng & nhóm quyền ---------- */
 export const userApi = {
   search: (payload: Record<string, unknown>) =>
     apiClient.post('/users/search', payload).then(unwrap<PageResponse<User>>),
@@ -54,7 +54,7 @@ export const userApi = {
     apiClient.put(`/users/${id}`, payload).then(unwrap<User>),
   remove: (id: number) => apiClient.delete(`/users/${id}`).then(() => undefined),
   resetPassword: (id: number, newPassword: string) =>
-    apiClient.put(`/users/${id}/reset-password`, null, { params: { newPassword } }).then(() => undefined),
+    apiClient.put(`/users/${id}/reset-password`, { newPassword }).then(() => undefined),
 };
 
 export const roleApi = {
@@ -82,7 +82,7 @@ export const shipperApi = {
   remove: (id: number) => apiClient.delete(`/shippers/${id}`).then(() => undefined),
 };
 
-/* ================= Don hang ================= */
+/* ---------- Đơn hàng ---------- */
 export const orderApi = {
   search: (payload: OrderSearchRequest) =>
     apiClient.post('/orders/search', payload).then(unwrap<PageResponse<OrderSummary>>),
@@ -105,12 +105,12 @@ export const orderApi = {
     const formData = new FormData();
     formData.append('file', file);
     return apiClient
-      .post('/orders/import', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .post('/orders/import', formData)
       .then(unwrap<ExcelImportResult>);
   },
 };
 
-/* ================= Dieu phoi ================= */
+/* ---------- Điều phối ---------- */
 export const dispatchApi = {
   assign: (orderId: number, shipperId?: number, note?: string) =>
     apiClient.post('/dispatch/assign', { orderId, shipperId, note }).then(unwrap<Assignment>),
@@ -124,7 +124,7 @@ export const dispatchApi = {
     apiClient.get(`/dispatch/orders/${orderId}/assignments`).then(unwrap<Assignment[]>),
 };
 
-/* ================= Phi va voucher ================= */
+/* ---------- Phí và voucher ---------- */
 export const pricingApi = {
   preview: (payload: Record<string, unknown>) =>
     apiClient.post('/pricing/preview', payload).then(unwrap<FeePreview>),
@@ -142,7 +142,7 @@ export const voucherApi = {
   remove: (id: number) => apiClient.delete(`/vouchers/${id}`).then(() => undefined),
 };
 
-/* ================= Thanh toan ================= */
+/* ---------- Thanh toán ---------- */
 export const paymentApi = {
   create: (orderId: number, bankCode?: string) =>
     apiClient.post('/payments/create', { orderId, bankCode }).then(unwrap<PaymentInit>),
@@ -166,7 +166,7 @@ export const codApi = {
     apiClient.put(`/cod-settlements/${id}/confirm`, null, { params: { note } }).then(unwrap<CodSettlement>),
 };
 
-/* ================= Tracking & thong bao ================= */
+/* ---------- Tracking & thông báo ---------- */
 export const trackingApi = {
   pushLocation: (payload: Record<string, unknown>) =>
     apiClient.post('/tracking/location', payload).then(unwrap<ShipperLocation>),
@@ -205,7 +205,6 @@ export const fileApi = {
     return apiClient
       .post('/files/upload', formData, {
         params: { feature, referenceId },
-        headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then(unwrap<StoredFile>);
   },

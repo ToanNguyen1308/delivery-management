@@ -18,9 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Sinh va xac thuc JWT (access token + refresh token).
- */
+/** Sinh và xác thực JWT. */
 @Slf4j
 @Component
 public class JwtTokenProvider {
@@ -43,6 +41,8 @@ public class JwtTokenProvider {
                 .subject(userDetails.getUsername())
                 .claim(AppConstants.CLAIM_USER_ID, userDetails.getUserId())
                 .claim(AppConstants.CLAIM_AUTHORITIES, authorities)
+                .claim(AppConstants.CLAIM_ROLE_GROUPS, userDetails.getRoleGroupCodes().stream().sorted().toList())
+                .claim(AppConstants.CLAIM_FULL_NAME, userDetails.getFullName())
                 .claim(AppConstants.CLAIM_TOKEN_TYPE, AppConstants.TOKEN_TYPE_ACCESS)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(jwtProperties.accessExpirationMs())))

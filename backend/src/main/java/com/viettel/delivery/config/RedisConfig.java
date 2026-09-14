@@ -21,9 +21,8 @@ import java.time.Duration;
 public class RedisConfig {
 
     /**
-     * ObjectMapper rieng cho Redis, co bat default typing de khoi phuc dung kieu khi doc cache.
-     * Khong khai bao thanh bean de tranh ghi de ObjectMapper mac dinh cua REST API,
-     * neu khong moi response se bi chen them truong "@class".
+     * ObjectMapper riêng cho Redis (bật default typing). Không khai báo bean
+     * để tránh ghi đè mapper REST — nếu không response sẽ có thêm "@class".
      */
     private ObjectMapper buildRedisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -60,10 +59,7 @@ public class RedisConfig {
                         .fromSerializer(new GenericJackson2JsonRedisSerializer(buildRedisObjectMapper())));
     }
 
-    /**
-     * Cac vung cache co thoi gian song khac nhau: so lieu dashboard doi moi nhanh,
-     * bang phi hau nhu khong doi nen cache lau hon.
-     */
+    /** Dashboard cache 2 phút; bảng phí ít đổi nên cache 30 phút. */
     @Bean
     public RedisCacheManagerBuilderCustomizer cacheManagerCustomizer(RedisCacheConfiguration baseConfig) {
         return builder -> builder

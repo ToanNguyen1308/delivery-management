@@ -71,6 +71,10 @@ case "${1:-start}" in
     start_cluster
     ;;
   stop)
+    if [ ! -f "$DATA_DIR/postmaster.pid" ]; then
+      echo "Postgres tam (.tmp-pg, cong $PORT) khong dang chay. Khong can tat."
+      exit 0
+    fi
     "$PG_BIN/pg_ctl" -D "$DATA_DIR" stop
     ;;
   reset)

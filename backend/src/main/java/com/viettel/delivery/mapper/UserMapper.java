@@ -19,6 +19,7 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "roleGroups", source = "roleGroups")
+    @Mapping(target = "permissions", ignore = true)
     UserResponse toResponse(User user);
 
     RoleGroupSummaryResponse toRoleGroupSummary(RoleGroup roleGroup);

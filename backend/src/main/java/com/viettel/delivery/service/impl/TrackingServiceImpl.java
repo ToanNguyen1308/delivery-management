@@ -11,6 +11,7 @@ import com.viettel.delivery.entity.Order;
 import com.viettel.delivery.entity.Shipper;
 import com.viettel.delivery.entity.ShipperLocation;
 import com.viettel.delivery.entity.TrackingEvent;
+import com.viettel.delivery.exception.BusinessException;
 import com.viettel.delivery.exception.ResourceNotFoundException;
 import com.viettel.delivery.mapper.TrackingMapper;
 import com.viettel.delivery.repository.OrderRepository;
@@ -22,6 +23,7 @@ import com.viettel.delivery.service.ShipperService;
 import com.viettel.delivery.service.TrackingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +61,10 @@ public class TrackingServiceImpl implements TrackingService {
         Order order = request.getOrderId() == null
                 ? null
                 : orderRepository.findByIdAndIsDeletedFalse(request.getOrderId()).orElse(null);
+        if (order != null && (order.getCurrentShipper() == null
+                || !shipper.getId().equals(order.getCurrentShipper().getId()))) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED, HttpStatus.FORBIDDEN);
+        }
 
         shipperLocationRepository.save(ShipperLocation.builder()
                 .shipper(shipper)
@@ -150,7 +156,7 @@ public class TrackingServiceImpl implements TrackingService {
                 .currentLatitude(shipper == null ? null : shipper.getCurrentLatitude())
                 .currentLongitude(shipper == null ? null : shipper.getCurrentLongitude())
                 .lastLocationAt(shipper == null ? null : shipper.getLastLocationAt())
-                .proofImageUrl(order.getProofImageUrl())
+                .proofImageUrl(publicView ? null : order.getProofImageUrl())
                 .events(trackingMapper.toEventResponseList(events))
                 .route(route)
                 .build();

@@ -9,9 +9,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-/**
- * Cau hinh WebSocket STOMP cho tracking vi tri va thong bao realtime.
- */
+/** WebSocket STOMP cho tracking vị trí và thông báo realtime. */
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor

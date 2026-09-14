@@ -31,13 +31,9 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-Nếu máy đã có PostgreSQL chiếm cổng 5432, sửa trong `.env`:
+Postgres trên máy host được map ra **15432** (tránh đụng PostgreSQL 5432 có sẵn). Trong Docker, backend vẫn nối `postgres:5432`.
 
-```bash
-DB_HOST_PORT=15432
-```
-
-rồi chạy lại `docker compose up -d`. Không cần copy `.env.example` lần nữa nếu file `.env` đã tồn tại.
+Nếu `.env` đã có thì **không** copy lại `.env.example`, chỉ cần `docker compose up -d --build`.
 
 | Thành phần | Địa chỉ |
 | --- | --- |

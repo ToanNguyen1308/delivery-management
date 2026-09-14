@@ -45,7 +45,6 @@ const RoleGroupPage = () => {
     void load();
   }, [load]);
 
-  /** Nhom chuc nang theo module de form chon quyen de doc hon. */
   const functionsByModule = useMemo(() => {
     return functions.reduce<Record<string, FunctionItem[]>>((acc, item) => {
       const key = item.module ?? 'KHAC';

@@ -11,9 +11,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tien ich ky va xac thuc chu ky HMAC-SHA512 theo chuan VNPay version 2.1.0.
- */
+/** Ký HMAC-SHA512 theo chuẩn VNPay 2.1.0. */
 public final class VnPayUtil {
 
     private static final String HMAC_ALGORITHM = "HmacSHA512";
@@ -23,9 +21,7 @@ public final class VnPayUtil {
     private VnPayUtil() {
     }
 
-    /**
-     * Sap xep tham so theo thu tu alphabet roi noi thanh chuoi canonical de ky.
-     */
+    /** Sắp tham số alphabet rồi nối chuỗi canonical để ký. */
     public static String buildHashData(Map<String, String> params) {
         List<String> fieldNames = new ArrayList<>(params.keySet());
         fieldNames.removeIf(name -> SECURE_HASH_FIELD.equals(name) || SECURE_HASH_TYPE_FIELD.equals(name));
@@ -47,9 +43,7 @@ public final class VnPayUtil {
         return hashData.toString();
     }
 
-    /**
-     * Chuoi query gui sang VNPay, cung thu tu tham so voi chuoi dung de ky.
-     */
+    /** Query gửi VNPay phải cùng thứ tự với chuỗi đã ký. */
     public static String buildQueryUrl(Map<String, String> params) {
         return buildHashData(params);
     }

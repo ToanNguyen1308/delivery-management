@@ -53,7 +53,11 @@ const App = () => {
 
       <Route element={user ? <MainLayout /> : <Navigate to="/login" replace />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={
+          <RequirePermission permission={PERMISSION.DASHBOARD_VIEW}>
+            <DashboardPage />
+          </RequirePermission>
+        } />
         <Route path="/notifications" element={<NotificationPage />} />
         <Route path="/profile" element={<ProfilePage />} />
 
@@ -148,7 +152,7 @@ const App = () => {
         <Route
           path="/pricing"
           element={
-            <RequirePermission permission={PERMISSION.PRICING_VIEW}>
+            <RequirePermission permission={PERMISSION.PRICING_MANAGE}>
               <PricingPage />
             </RequirePermission>
           }
@@ -156,7 +160,7 @@ const App = () => {
         <Route
           path="/vouchers"
           element={
-            <RequirePermission permission={PERMISSION.VOUCHER_VIEW}>
+            <RequirePermission permission={PERMISSION.VOUCHER_MANAGE}>
               <VoucherPage />
             </RequirePermission>
           }

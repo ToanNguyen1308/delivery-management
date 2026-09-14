@@ -96,6 +96,21 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessException(ErrorCode.ORDER_ALREADY_PAID);
         }
 
+        List<Payment> pending = paymentRepository.findByOrderIdAndStatuses(
+                order.getId(), List.of(PaymentStatus.PENDING));
+        if (!pending.isEmpty()) {
+            Payment existing = pending.getFirst();
+            boolean mockMode = !vnPayGateway.isAvailable();
+            return PaymentInitResponse.builder()
+                    .paymentId(existing.getId())
+                    .txnRef(existing.getTxnRef())
+                    .orderCode(order.getOrderCode())
+                    .amount(existing.getAmount())
+                    .payUrl(existing.getPayUrl())
+                    .mockMode(mockMode)
+                    .build();
+        }
+
         Payment payment = paymentRepository.save(Payment.builder()
                 .txnRef(generateTxnRef())
                 .order(order)
@@ -134,6 +149,9 @@ public class PaymentServiceImpl implements PaymentService {
         if (!callback.validSignature()) {
             log.warn("Chu ky ReturnUrl khong hop le cho giao dich {}", callback.txnRef());
             throw new BusinessException(ErrorCode.PAYMENT_INVALID_SIGNATURE);
+        }
+        if (callback.amount() != null && payment.getAmount().compareTo(callback.amount()) != 0) {
+            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
         }
 
         applyCallbackResult(payment, callback);
@@ -180,6 +198,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessException(ErrorCode.PAYMENT_METHOD_NOT_SUPPORTED);
         }
         Payment payment = findPaymentOrThrow(txnRef);
+        orderService.getAccessibleOrder(payment.getOrder().getId());
         if (payment.isFinalized()) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_PROCESSED);
         }
@@ -229,7 +248,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void applyCallbackResult(Payment payment, PaymentCallbackResult callback) {
-        if (payment.isFinalized()) {
+        if (PaymentStatus.PAID.equals(payment.getStatus())) {
             return;
         }
 

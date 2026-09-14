@@ -26,9 +26,7 @@ const theme = {
   },
 };
 
-// Cac lenh message.success / Modal.confirm goi tinh o nhieu man hinh nam ngoai cay React
-// nen khong tu doc duoc theme va locale. holderRender bao cho antd biet phai boc chung
-// trong dung ConfigProvider nay, nho vay hop thoai va thong bao dung mau va tieng Viet.
+// message/Modal gọi tĩnh nằm ngoài cây React; holderRender để giữ theme + tiếng Việt
 ConfigProvider.config({
   holderRender: (children) => (
     <ConfigProvider locale={viVN} theme={theme}>

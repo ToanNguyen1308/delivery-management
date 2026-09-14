@@ -11,8 +11,7 @@ interface Subscription {
 }
 
 /**
- * Ket noi STOMP qua SockJS. Token duoc gui bang query param vi handshake
- * cua SockJS khong cho phep dat header Authorization.
+ * STOMP qua SockJS. Token gửi query param vì handshake không gắn được header Authorization.
  */
 export const useStomp = (subscriptions: Subscription[], enabled = true): void => {
   const subscriptionsRef = useRef(subscriptions);
@@ -23,13 +22,13 @@ export const useStomp = (subscriptions: Subscription[], enabled = true): void =>
       return undefined;
     }
 
-    const token = localStorage.getItem(STORAGE_KEYS.accessToken);
-    // Endpoint STOMP nam duoi context path cua backend (/api/v1/ws)
     const apiBase = import.meta.env.VITE_API_BASE_URL ?? '/api/v1';
-    const socketUrl = `${apiBase}/ws${token ? `?access_token=${token}` : ''}`;
-
     const client = new Client({
-      webSocketFactory: () => new SockJS(socketUrl) as WebSocket,
+      webSocketFactory: () => {
+        const token = localStorage.getItem(STORAGE_KEYS.accessToken);
+        const socketUrl = `${apiBase}/ws${token ? `?access_token=${token}` : ''}`;
+        return new SockJS(socketUrl) as WebSocket;
+      },
       reconnectDelay: 5000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,

@@ -23,7 +23,7 @@ public final class ShipperSpecification {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
 
-            // Join fetch user de tranh N+1 khi map sang DTO, chi ap dung cho truy van lay du lieu
+            // Join fetch user để tránh N+1 khi map DTO (không dùng cho count query)
             Join<Shipper, User> userJoin = root.join("user", JoinType.INNER);
             if (query != null && !Long.class.equals(query.getResultType())) {
                 root.fetch("user", JoinType.INNER);

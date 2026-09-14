@@ -110,6 +110,9 @@ public class ShipperServiceImpl implements ShipperService {
     @Override
     @Transactional
     public ShipperResponse updateMyStatus(ShipperStatus status) {
+        if (status == ShipperStatus.SUSPENDED) {
+            throw new BusinessException(ErrorCode.SHIPPER_INVALID_STATUS);
+        }
         Shipper shipper = getShipperEntityByUserId(SecurityUtil.getCurrentUserId());
         shipper.setStatus(status);
         log.info("Shipper {} chuyen sang trang thai {}", shipper.getShipperCode(), status);

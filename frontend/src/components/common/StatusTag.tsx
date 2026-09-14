@@ -6,7 +6,6 @@ interface StatusTagProps {
   colorMap?: Record<string, string>;
 }
 
-/** Hien thi enum tra ve tu backend kem mau sac tuong ung. */
 const StatusTag = ({ value, colorMap }: StatusTagProps) => {
   if (!value) {
     return <Tag>-</Tag>;

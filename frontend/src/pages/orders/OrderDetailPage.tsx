@@ -55,14 +55,19 @@ const OrderDetailPage = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [orderData, historyData, trackingData] = await Promise.all([
+      const [orderData, historyData] = await Promise.all([
         orderApi.getById(orderId),
         orderApi.history(orderId),
-        trackingApi.byOrder(orderId),
       ]);
       setOrder(orderData);
       setHistory(historyData);
-      setTracking(trackingData);
+      if (hasPermission(PERMISSION.TRACKING_VIEW)) {
+        try {
+          setTracking(await trackingApi.byOrder(orderId));
+        } catch {
+          setTracking(null);
+        }
+      }
       if (hasPermission(PERMISSION.PAYMENT_VIEW)) {
         setPayments(await paymentApi.byOrder(orderId));
       }
@@ -75,20 +80,25 @@ const OrderDetailPage = () => {
     void load();
   }, [load]);
 
-  // Nhan cap nhat vi tri shipper va su kien moi theo thoi gian thuc
   const subscriptions = useMemo(
     () =>
       order
         ? [
             {
               destination: `/topic/orders/${order.orderCode}`,
-              handler: () => {
-                void trackingApi.byOrder(orderId).then(setTracking);
+              handler: (payload: unknown) => {
+                if (payload && typeof payload === 'object' && 'eventType' in payload) {
+                  void load();
+                  return;
+                }
+                if (hasPermission(PERMISSION.TRACKING_VIEW)) {
+                  void trackingApi.byOrder(orderId).then(setTracking);
+                }
               },
             },
           ]
         : [],
-    [order, orderId],
+    [order, orderId, load, hasPermission],
   );
   useStomp(subscriptions, Boolean(order));
 
@@ -126,6 +136,10 @@ const OrderDetailPage = () => {
     if (!statusTarget) {
       return;
     }
+    if (statusTarget.code === 'DELIVERED' && !proofUrl) {
+      message.warning('Cần tải ảnh xác nhận giao hàng trước khi hoàn tất');
+      return;
+    }
     await orderApi.updateStatus(orderId, {
       status: statusTarget.code,
       note: values.note,
@@ -155,15 +169,11 @@ const OrderDetailPage = () => {
         title: 'Chế độ thanh toán giả lập',
         content: `Hệ thống chưa cấu hình VNPay sandbox. Xác nhận thanh toán ${formatMoney(init.amount)} cho đơn ${init.orderCode}?`,
         okText: 'Thanh toán thành công',
-        cancelText: 'Thanh toán thất bại',
+        cancelText: 'Đóng',
+        maskClosable: false,
         onOk: async () => {
           await paymentApi.completeMock(init.txnRef, true);
           message.success('Thanh toán thành công');
-          void load();
-        },
-        onCancel: async () => {
-          await paymentApi.completeMock(init.txnRef, false);
-          message.warning('Giao dịch thất bại');
           void load();
         },
       });
@@ -224,8 +234,8 @@ const OrderDetailPage = () => {
   const canPay =
     hasPermission(PERMISSION.PAYMENT_CREATE) &&
     order.paymentMethod.code === 'VNPAY' &&
-    order.paymentStatus.code !== 'PAID';
-  const canOperateDelivery = hasRole(ROLE_GROUP.SHIPPER);
+    ['UNPAID', 'FAILED'].includes(order.paymentStatus.code);
+  const canOperateDelivery = hasRole(ROLE_GROUP.SHIPPER) || hasPermission(PERMISSION.SHIPPER_SELF);
   const shipperStatuses = new Set(['PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'FAILED', 'RETURNED']);
 
   return (
@@ -248,14 +258,14 @@ const OrderDetailPage = () => {
                 Xác nhận đơn
               </Button>
             )}
-            {order.nextStatuses
-              .filter((status) => !['CANCELLED', 'CONFIRMED'].includes(status.code))
-              .filter((status) => canOperateDelivery || !shipperStatuses.has(status.code))
-              .map((status) => (
-                <Button key={status.code} onClick={() => setStatusTarget(status)}>
-                  {status.description}
-                </Button>
-              ))}
+            {canOperateDelivery &&
+              order.nextStatuses
+                .filter((status) => shipperStatuses.has(status.code))
+                .map((status) => (
+                  <Button key={status.code} onClick={() => setStatusTarget(status)}>
+                    {status.description}
+                  </Button>
+                ))}
             {canCancel && (
               <Button danger icon={<CloseCircleOutlined />} onClick={handleCancel}>
                 Hủy đơn
@@ -460,6 +470,7 @@ const OrderDetailPage = () => {
           setProofUrl('');
         }}
         onOk={() => statusForm.submit()}
+        okButtonProps={{ disabled: statusTarget?.code === 'DELIVERED' && !proofUrl }}
         okText="Xác nhận"
         cancelText="Đóng"
       >

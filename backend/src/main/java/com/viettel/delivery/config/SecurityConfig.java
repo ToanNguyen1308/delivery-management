@@ -25,16 +25,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    /**
-     * Cac endpoint khong yeu cau dang nhap: dang nhap/dang ky, tra cuu van don cong khai,
-     * callback cua cong thanh toan, Swagger va healthcheck.
-     */
+    /** Endpoint công khai: auth, tra cứu vận đơn, IPN VNPay, Swagger, health. */
     private static final String[] PUBLIC_ENDPOINTS = {
             "/auth/login",
             "/auth/register",
             "/auth/refresh",
             "/public/**",
             "/payments/vnpay/ipn",
+            "/payments/vnpay/return",
             "/ws/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",

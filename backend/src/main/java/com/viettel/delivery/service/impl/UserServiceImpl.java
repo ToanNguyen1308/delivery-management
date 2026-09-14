@@ -12,6 +12,7 @@ import com.viettel.delivery.entity.User;
 import com.viettel.delivery.exception.BusinessException;
 import com.viettel.delivery.exception.ResourceNotFoundException;
 import com.viettel.delivery.mapper.UserMapper;
+import com.viettel.delivery.repository.RefreshTokenRepository;
 import com.viettel.delivery.repository.RoleGroupRepository;
 import com.viettel.delivery.repository.UserRepository;
 import com.viettel.delivery.repository.specification.UserSpecification;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final RoleGroupRepository roleGroupRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -114,6 +116,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(Long id, String newPassword) {
         User user = findUserOrThrow(id);
         user.setPassword(passwordEncoder.encode(newPassword));
+        refreshTokenRepository.revokeAllByUserId(user.getId());
         log.info("Da dat lai mat khau cho nguoi dung: {}", user.getUsername());
     }
 

@@ -3,7 +3,6 @@ package com.viettel.delivery.service.impl;
 import com.viettel.delivery.constant.ErrorCode;
 import com.viettel.delivery.constant.enums.CodSettlementStatus;
 import com.viettel.delivery.constant.enums.OrderStatus;
-import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.dto.request.OrderStatusUpdateRequest;
 import com.viettel.delivery.entity.Order;
 import com.viettel.delivery.entity.OrderStatusHistory;
@@ -78,7 +77,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
             return;
         }
         CustomUserDetails user = SecurityUtil.requireCurrentUser();
-        if (!user.hasRoleGroup(RoleGroupCode.SHIPPER.name())) {
+        if (!user.isShipper()) {
             throw new BusinessException(ErrorCode.ORDER_STATUS_SHIPPER_ONLY, HttpStatus.FORBIDDEN);
         }
         Shipper shipper = order.getCurrentShipper();
@@ -87,9 +86,7 @@ public class OrderStatusServiceImpl implements OrderStatusService {
         }
     }
 
-    /**
-     * Anh xac nhan giao hang la bat buoc truoc khi dong don thanh cong.
-     */
+    /** Giao thành công bắt buộc có ảnh xác nhận. */
     private void validateRequiredData(Order order, OrderStatusUpdateRequest request, OrderStatus target) {
         if (OrderStatus.DELIVERED.equals(target)
                 && !StringUtils.hasText(request.getProofImageUrl())
@@ -104,6 +101,13 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
         switch (target) {
             case PICKED_UP -> order.setPickedUpAt(now);
+            case CONFIRMED -> {
+                // Shipper từ chối: đơn về CONFIRMED, gỡ shipper và giảm load
+                if (OrderStatus.ASSIGNED.equals(order.getStatus()) && shipper != null) {
+                    shipper.decreaseLoad();
+                    order.setCurrentShipper(null);
+                }
+            }
             case DELIVERED -> {
                 order.setDeliveredAt(now);
                 if (StringUtils.hasText(request.getProofImageUrl())) {
@@ -138,7 +142,6 @@ public class OrderStatusServiceImpl implements OrderStatusService {
                 }
             }
             default -> {
-                // CONFIRMED, ASSIGNED, IN_TRANSIT khong co xu ly bo sung tai day
             }
         }
     }

@@ -30,7 +30,7 @@ const LoginPage = () => {
       message.success('Đăng nhập thành công');
       navigate('/dashboard');
     } catch {
-      // Thong bao loi da duoc interceptor xu ly
+      // interceptor đã hiện toast
     } finally {
       setLoading(false);
     }

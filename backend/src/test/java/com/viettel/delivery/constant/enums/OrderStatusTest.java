@@ -78,6 +78,7 @@ class OrderStatusTest {
         assertThat(OrderStatus.RETURNED.isShipperOperation()).isTrue();
         assertThat(OrderStatus.CREATED.isShipperOperation()).isFalse();
         assertThat(OrderStatus.CONFIRMED.isShipperOperation()).isFalse();
+        assertThat(OrderStatus.ASSIGNED.isShipperOperation()).isFalse();
         assertThat(OrderStatus.CANCELLED.isShipperOperation()).isFalse();
     }
 

@@ -14,7 +14,7 @@ const RegisterPage = () => {
       message.success('Đăng ký thành công, vui lòng đăng nhập');
       navigate('/login');
     } catch {
-      // Interceptor da hien thi loi
+      // interceptor đã hiện toast
     } finally {
       setLoading(false);
     }

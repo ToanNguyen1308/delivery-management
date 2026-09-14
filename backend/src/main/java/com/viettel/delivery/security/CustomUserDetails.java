@@ -1,5 +1,7 @@
 package com.viettel.delivery.security;
 
+import com.viettel.delivery.constant.PermissionCode;
+import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.entity.RoleGroup;
 import com.viettel.delivery.entity.User;
 import lombok.Getter;
@@ -12,9 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Principal cua he thong: ngoai username con giu userId va danh sach function_code.
- */
+/** Principal: userId, function_code và mã nhóm quyền. */
 @Getter
 public class CustomUserDetails implements UserDetails {
 
@@ -57,6 +57,14 @@ public class CustomUserDetails implements UserDetails {
 
     public boolean hasRoleGroup(String roleGroupCode) {
         return roleGroupCodes.contains(roleGroupCode);
+    }
+
+    /** Token cũ có thể thiếu claim nhóm quyền, nên vẫn nhận diện qua SHIPPER_SELF. */
+    public boolean isShipper() {
+        return hasRoleGroup(RoleGroupCode.SHIPPER.name())
+                || authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(PermissionCode.SHIPPER_SELF::equals);
     }
 
     @Override

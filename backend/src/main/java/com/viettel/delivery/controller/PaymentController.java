@@ -58,7 +58,7 @@ public class PaymentController {
     }
 
     /**
-     * Endpoint nay duoc VNPay goi truc tiep server-to-server nen khong yeu cau dang nhap.
+     * VNPay gọi server-to-server nên không yêu cầu đăng nhập; xác thực bằng chữ ký HMAC.
      */
     @GetMapping("/vnpay/ipn")
     @Operation(summary = "Nhan IPN tu VNPay", description = "Tra ve RspCode theo dinh dang VNPay quy dinh")

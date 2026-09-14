@@ -20,6 +20,7 @@ const MyTasksPage = () => {
   const [loading, setLoading] = useState(false);
   const [sharingLocation, setSharingLocation] = useState(false);
   const intervalRef = useRef<number | null>(null);
+  const activeOrderIdRef = useRef<number | undefined>(undefined);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -41,7 +42,6 @@ const MyTasksPage = () => {
     void load();
   }, [load]);
 
-  /** Dung chia se vi tri khi roi khoi trang de tranh ro ri interval. */
   useEffect(
     () => () => {
       if (intervalRef.current) {
@@ -76,6 +76,7 @@ const MyTasksPage = () => {
   const activeOrderId = assignments.find((item) =>
     ['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(item.orderStatus.code),
   )?.orderId;
+  activeOrderIdRef.current = activeOrderId;
 
   const toggleLocationSharing = (enabled: boolean) => {
     setSharingLocation(enabled);
@@ -84,9 +85,9 @@ const MyTasksPage = () => {
       intervalRef.current = null;
     }
     if (enabled) {
-      pushCurrentLocation(activeOrderId);
+      pushCurrentLocation(activeOrderIdRef.current);
       intervalRef.current = window.setInterval(
-        () => pushCurrentLocation(activeOrderId),
+        () => pushCurrentLocation(activeOrderIdRef.current),
         LOCATION_PUSH_INTERVAL_MS,
       );
       message.success('Đã bật chia sẻ vị trí, hệ thống cập nhật mỗi 15 giây');

@@ -27,7 +27,7 @@ public final class OrderSpecification {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
 
-            // Phan quyen du lieu: khach hang chi thay don minh tao, shipper chi thay don duoc giao
+            // Khách chỉ thấy đơn mình tạo, shipper chỉ thấy đơn được giao
             if (restrictCustomerId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("customer").get("id"), restrictCustomerId));
             }

@@ -17,7 +17,7 @@ public final class ErrorCode {
     public static final String RESOURCE_NOT_FOUND = "error.common.notFound";
     public static final String FILE_TOO_LARGE = "error.common.fileTooLarge";
 
-    /* ---------- Nguoi dung ---------- */
+    /* ---------- Người dùng ---------- */
     public static final String USER_NOT_FOUND = "error.user.notFound";
     public static final String USER_USERNAME_EXISTED = "error.user.usernameExisted";
     public static final String USER_EMAIL_EXISTED = "error.user.emailExisted";
@@ -32,7 +32,7 @@ public final class ErrorCode {
     public static final String TOKEN_EXPIRED = "error.token.expired";
     public static final String TOKEN_REVOKED = "error.token.revoked";
 
-    /* ---------- Nhom quyen ---------- */
+    /* ---------- Nhóm quyền ---------- */
     public static final String ROLE_GROUP_NOT_FOUND = "error.roleGroup.notFound";
     public static final String ROLE_GROUP_CODE_EXISTED = "error.roleGroup.codeExisted";
     public static final String FUNCTION_NOT_FOUND = "error.function.notFound";
@@ -44,8 +44,9 @@ public final class ErrorCode {
     public static final String SHIPPER_NOT_AVAILABLE = "error.shipper.notAvailable";
     public static final String SHIPPER_OVERLOADED = "error.shipper.overloaded";
     public static final String SHIPPER_PROFILE_MISSING = "error.shipper.profileMissing";
+    public static final String SHIPPER_INVALID_STATUS = "error.shipper.invalidStatus";
 
-    /* ---------- Don hang ---------- */
+    /* ---------- Đơn hàng ---------- */
     public static final String ORDER_NOT_FOUND = "error.order.notFound";
     public static final String ORDER_INVALID_TRANSITION = "error.order.invalidTransition";
     public static final String ORDER_NOT_EDITABLE = "error.order.notEditable";
@@ -56,12 +57,12 @@ public final class ErrorCode {
     public static final String ORDER_PROOF_REQUIRED = "error.order.proofRequired";
     public static final String ORDER_STATUS_SHIPPER_ONLY = "error.order.statusShipperOnly";
 
-    /* ---------- Dieu phoi ---------- */
+    /* ---------- Điều phối ---------- */
     public static final String ASSIGNMENT_NOT_FOUND = "error.assignment.notFound";
     public static final String ASSIGNMENT_NOT_PENDING = "error.assignment.notPending";
     public static final String ASSIGNMENT_NO_SHIPPER_AVAILABLE = "error.assignment.noShipperAvailable";
 
-    /* ---------- Phi va voucher ---------- */
+    /* ---------- Phí và voucher ---------- */
     public static final String PRICING_RULE_NOT_FOUND = "error.pricing.notFound";
     public static final String VOUCHER_NOT_FOUND = "error.voucher.notFound";
     public static final String VOUCHER_CODE_EXISTED = "error.voucher.codeExisted";
@@ -72,7 +73,7 @@ public final class ErrorCode {
     public static final String VOUCHER_ALREADY_USED = "error.voucher.alreadyUsed";
     public static final String VOUCHER_INACTIVE = "error.voucher.inactive";
 
-    /* ---------- Thanh toan ---------- */
+    /* ---------- Thanh toán ---------- */
     public static final String PAYMENT_NOT_FOUND = "error.payment.notFound";
     public static final String PAYMENT_GATEWAY_DISABLED = "error.payment.gatewayDisabled";
     public static final String PAYMENT_INVALID_SIGNATURE = "error.payment.invalidSignature";
@@ -81,11 +82,13 @@ public final class ErrorCode {
     public static final String PAYMENT_ALREADY_PROCESSED = "error.payment.alreadyProcessed";
     public static final String COD_SETTLEMENT_NOT_FOUND = "error.cod.notFound";
     public static final String COD_NOTHING_TO_SETTLE = "error.cod.nothingToSettle";
+    public static final String COD_INVALID_STATUS = "error.cod.invalidStatus";
 
     /* ---------- File ---------- */
     public static final String FILE_UPLOAD_FAILED = "error.file.uploadFailed";
     public static final String FILE_NOT_FOUND = "error.file.notFound";
     public static final String FILE_TYPE_NOT_ALLOWED = "error.file.typeNotAllowed";
+    public static final String FILE_FEATURE_NOT_ALLOWED = "error.file.featureNotAllowed";
 
     /* ---------- Excel ---------- */
     public static final String EXCEL_INVALID_FORMAT = "error.excel.invalidFormat";

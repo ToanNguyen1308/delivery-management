@@ -5,14 +5,10 @@ import com.viettel.delivery.constant.AppConstants;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-/**
- * Tinh khoang cach giua hai toa do bang cong thuc Haversine.
- */
+/** Tính khoảng cách giữa hai tọa độ bằng Haversine. */
 public final class GeoUtil {
 
-    /**
-     * He so quy doi tu duong chim bay sang quang duong duong bo thuc te.
-     */
+    /** Hệ số quy đổi đường chim bay → đường bộ thực tế. */
     private static final BigDecimal ROAD_FACTOR = new BigDecimal("1.30");
 
     private GeoUtil() {
@@ -36,9 +32,7 @@ public final class GeoUtil {
         return BigDecimal.valueOf(km).setScale(AppConstants.DISTANCE_SCALE, RoundingMode.HALF_UP);
     }
 
-    /**
-     * Quang duong uoc tinh khi di chuyen thuc te, dung de tinh cuoc van chuyen.
-     */
+    /** Ước lượng đường bộ thực tế, dùng tính cước. */
     public static BigDecimal roadDistanceKm(BigDecimal lat1, BigDecimal lon1, BigDecimal lat2, BigDecimal lon2) {
         return distanceKm(lat1, lon1, lat2, lon2)
                 .multiply(ROAD_FACTOR)

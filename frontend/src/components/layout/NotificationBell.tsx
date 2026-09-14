@@ -21,7 +21,7 @@ const NotificationBell = () => {
       setItems(page.content);
       setUnread(count);
     } catch {
-      // Loi tai thong bao khong anh huong den man hinh chinh
+      // không chặn màn hình chính nếu chuông lỗi
     }
   }, []);
 
@@ -29,7 +29,6 @@ const NotificationBell = () => {
     void reload();
   }, [reload]);
 
-  // Nhan thong bao day realtime tu backend
   const subscriptions = useMemo(
     () => [
       {

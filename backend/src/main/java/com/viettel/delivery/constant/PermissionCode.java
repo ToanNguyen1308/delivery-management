@@ -1,21 +1,20 @@
 package com.viettel.delivery.constant;
 
 /**
- * Danh sach function_code dung cho @PreAuthorize. Gia tri phai trung voi bang functions
- * duoc seed boi Liquibase (changelog 002-seed-rbac).
+ * function_code cho @PreAuthorize. Phải trùng bảng functions (Liquibase 002-seed-rbac).
  */
 public final class PermissionCode {
 
     private PermissionCode() {
     }
 
-    /* ---------- Nguoi dung ---------- */
+    /* ---------- Người dùng ---------- */
     public static final String USER_VIEW = "ROLE_USER_VIEW";
     public static final String USER_CREATE = "ROLE_USER_CREATE";
     public static final String USER_UPDATE = "ROLE_USER_UPDATE";
     public static final String USER_DELETE = "ROLE_USER_DELETE";
 
-    /* ---------- Nhom quyen ---------- */
+    /* ---------- Nhóm quyền ---------- */
     public static final String ROLE_VIEW = "ROLE_ROLE_VIEW";
     public static final String ROLE_MANAGE = "ROLE_ROLE_MANAGE";
 
@@ -26,7 +25,7 @@ public final class PermissionCode {
     public static final String SHIPPER_DELETE = "ROLE_SHIPPER_DELETE";
     public static final String SHIPPER_SELF = "ROLE_SHIPPER_SELF";
 
-    /* ---------- Don hang ---------- */
+    /* ---------- Đơn hàng ---------- */
     public static final String ORDER_VIEW = "ROLE_ORDER_VIEW";
     public static final String ORDER_CREATE = "ROLE_ORDER_CREATE";
     public static final String ORDER_UPDATE = "ROLE_ORDER_UPDATE";
@@ -35,7 +34,7 @@ public final class PermissionCode {
     public static final String ORDER_IMPORT = "ROLE_ORDER_IMPORT";
     public static final String ORDER_EXPORT = "ROLE_ORDER_EXPORT";
 
-    /* ---------- Dieu phoi ---------- */
+    /* ---------- Điều phối ---------- */
     public static final String DISPATCH_VIEW = "ROLE_DISPATCH_VIEW";
     public static final String DISPATCH_ASSIGN = "ROLE_DISPATCH_ASSIGN";
     public static final String DISPATCH_RESPOND = "ROLE_DISPATCH_RESPOND";
@@ -44,13 +43,13 @@ public final class PermissionCode {
     public static final String TRACKING_VIEW = "ROLE_TRACKING_VIEW";
     public static final String TRACKING_PUSH = "ROLE_TRACKING_PUSH";
 
-    /* ---------- Phi va voucher ---------- */
+    /* ---------- Phí và voucher ---------- */
     public static final String PRICING_VIEW = "ROLE_PRICING_VIEW";
     public static final String PRICING_MANAGE = "ROLE_PRICING_MANAGE";
     public static final String VOUCHER_VIEW = "ROLE_VOUCHER_VIEW";
     public static final String VOUCHER_MANAGE = "ROLE_VOUCHER_MANAGE";
 
-    /* ---------- Thanh toan ---------- */
+    /* ---------- Thanh toán ---------- */
     public static final String PAYMENT_VIEW = "ROLE_PAYMENT_VIEW";
     public static final String PAYMENT_CREATE = "ROLE_PAYMENT_CREATE";
     public static final String COD_VIEW = "ROLE_COD_VIEW";
@@ -61,7 +60,7 @@ public final class PermissionCode {
     public static final String DASHBOARD_VIEW = "ROLE_DASHBOARD_VIEW";
     public static final String DASHBOARD_ADMIN = "ROLE_DASHBOARD_ADMIN";
 
-    /* ---------- Bieu thuc dung lai trong @PreAuthorize ---------- */
+    /* ---------- Biểu thức dùng lại trong @PreAuthorize ---------- */
     public static final String HAS_ORDER_VIEW = "hasAuthority('" + ORDER_VIEW + "')";
     public static final String HAS_ORDER_CREATE = "hasAuthority('" + ORDER_CREATE + "')";
     public static final String HAS_ORDER_UPDATE = "hasAuthority('" + ORDER_UPDATE + "')";

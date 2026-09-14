@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Import va export don hang bang Apache POI.
+ * Import/export đơn hàng Excel.
  */
 @Slf4j
 @Service
@@ -145,8 +145,7 @@ public class OrderExcelServiceImpl implements OrderExcelService {
     }
 
     /**
-     * Khong bao transaction o day de moi dong duoc commit doc lap: mot dong loi
-     * khong lam mat cac dong da import thanh cong truoc do.
+     * Không bọc transaction ở đây: mỗi dòng commit riêng, một dòng lỗi không làm mất các dòng đã import.
      */
     @Override
     public ExcelImportResponse importOrders(MultipartFile file) {

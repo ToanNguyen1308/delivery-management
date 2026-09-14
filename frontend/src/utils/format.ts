@@ -17,7 +17,6 @@ export const formatDate = (value?: string | null): string =>
 export const formatTime = (value?: string | null): string =>
   value ? dayjs(value).format('HH:mm:ss') : '-';
 
-/** Tai file blob tra ve tu API (Excel) xuong may nguoi dung. */
 export const downloadBlob = (blob: Blob, fileName: string): void => {
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');

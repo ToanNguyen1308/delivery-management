@@ -1,6 +1,7 @@
 package com.viettel.delivery.security;
 
 import com.viettel.delivery.constant.ErrorCode;
+import com.viettel.delivery.constant.PermissionCode;
 import com.viettel.delivery.constant.enums.RoleGroupCode;
 import com.viettel.delivery.exception.BusinessException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 /**
- * Truy xuat nguoi dung dang dang nhap, phuc vu phan quyen du lieu o tang Specification/Service.
+ * Truy xuất user đăng nhập, phục vụ phân quyền dữ liệu ở tầng Specification/Service.
  */
 public final class SecurityUtil {
 
@@ -53,18 +54,17 @@ public final class SecurityUtil {
                 .anyMatch(functionCode::equals);
     }
 
-    /**
-     * Admin va dieu phoi vien duoc xem toan bo du lieu, cac role con lai bi gioi han theo chu so huu.
-     */
+    /** Admin và điều phối viên xem toàn bộ dữ liệu; các role khác giới hạn theo chủ sở hữu. */
     public static boolean canViewAllData() {
-        return hasAuthorityOfRole(RoleGroupCode.ADMIN) || hasAuthorityOfRole(RoleGroupCode.DISPATCHER);
-    }
-
-    private static boolean hasAuthorityOfRole(RoleGroupCode roleGroupCode) {
-        return switch (roleGroupCode) {
-            case ADMIN -> hasAuthority(com.viettel.delivery.constant.PermissionCode.USER_DELETE);
-            case DISPATCHER -> hasAuthority(com.viettel.delivery.constant.PermissionCode.DISPATCH_ASSIGN);
-            default -> false;
-        };
+        Optional<CustomUserDetails> current = getCurrentUser();
+        if (current.isEmpty()) {
+            return false;
+        }
+        CustomUserDetails user = current.get();
+        if (!user.getRoleGroupCodes().isEmpty()) {
+            return user.hasRoleGroup(RoleGroupCode.ADMIN.name())
+                    || user.hasRoleGroup(RoleGroupCode.DISPATCHER.name());
+        }
+        return hasAuthority(PermissionCode.USER_DELETE) || hasAuthority(PermissionCode.DISPATCH_ASSIGN);
     }
 }

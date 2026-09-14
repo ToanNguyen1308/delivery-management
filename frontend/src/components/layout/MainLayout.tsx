@@ -30,13 +30,8 @@ interface MenuDefinition {
   key: string;
   icon: React.ReactNode;
   label: string;
-  /** Chi hien thi khi nguoi dung co it nhat mot trong cac quyen nay. */
   permissions: string[];
-  /**
-   * Rang buoc them ve nhom quyen, danh cho cac man hinh mang tinh ca nhan.
-   * Vi du "Nhiem vu cua toi" chi co nghia voi tai khoan co ho so shipper:
-   * admin tuy duoc cap du 34 chuc nang nhung khong phai la shipper nen khong thay muc nay.
-   */
+  /** Màn hình cá nhân (ví dụ nhiệm vụ shipper): admin có đủ quyền nhưng không phải shipper thì ẩn. */
   roleGroups?: string[];
 }
 
@@ -65,7 +60,7 @@ const MENU_DEFINITIONS: MenuDefinition[] = [
   { key: '/users', icon: <TeamOutlined />, label: 'Người dùng', permissions: [PERMISSION.USER_VIEW] },
   { key: '/roles', icon: <SafetyCertificateOutlined />, label: 'Nhóm quyền', permissions: [PERMISSION.ROLE_VIEW] },
   { key: '/pricing', icon: <SettingOutlined />, label: 'Bảng phí', permissions: [PERMISSION.PRICING_MANAGE] },
-  { key: '/vouchers', icon: <GiftOutlined />, label: 'Voucher', permissions: [PERMISSION.VOUCHER_VIEW] },
+  { key: '/vouchers', icon: <GiftOutlined />, label: 'Voucher', permissions: [PERMISSION.VOUCHER_MANAGE] },
 ];
 
 const MainLayout = () => {
@@ -88,7 +83,7 @@ const MainLayout = () => {
     [hasAnyPermission, roleGroups],
   );
 
-  /** Chon muc menu khop dai nhat voi duong dan hien tai. */
+  // Ưu tiên mục khớp đường dẫn dài nhất (tránh /orders nuốt /orders/create)
   const selectedKey = useMemo(() => {
     const matched = MENU_DEFINITIONS.map((item) => item.key)
       .filter((key) => location.pathname === key || location.pathname.startsWith(`${key}/`))

@@ -5,7 +5,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-// Vite khong tu xu ly duong dan anh mac dinh cua Leaflet nen phai khai bao lai
+// Vite không xử lý đường dẫn icon mặc định của Leaflet
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
@@ -32,7 +32,6 @@ interface DeliveryMapProps {
   points: MapPoint[];
   route?: { latitude: number; longitude: number }[];
   height?: number;
-  /** Tu dong di chuyen ban do khi vi tri shipper thay doi. */
   followFirstPoint?: boolean;
 }
 

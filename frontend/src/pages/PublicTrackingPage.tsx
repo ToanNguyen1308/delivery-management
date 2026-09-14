@@ -10,7 +10,6 @@ import { ORDER_STATUS_COLOR } from '@/constants/permissions';
 import { formatDateTime } from '@/utils/format';
 import type { OrderTracking } from '@/types';
 
-/** Trang tra cuu van don khong yeu cau dang nhap. */
 const PublicTrackingPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [orderCode, setOrderCode] = useState(searchParams.get('code') ?? '');
@@ -41,7 +40,6 @@ const PublicTrackingPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Tu dong cap nhat khi don co su kien moi
   const subscriptions = useMemo(
     () =>
       tracking

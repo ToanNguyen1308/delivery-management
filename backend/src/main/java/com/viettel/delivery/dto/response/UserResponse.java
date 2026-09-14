@@ -27,4 +27,7 @@ public class UserResponse implements Serializable {
     private LocalDateTime lastLoginAt;
     private LocalDateTime createdDate;
     private List<RoleGroupSummaryResponse> roleGroups;
+
+    @Schema(description = "Danh sách function_code, dùng khi F5 để không mất menu")
+    private List<String> permissions;
 }

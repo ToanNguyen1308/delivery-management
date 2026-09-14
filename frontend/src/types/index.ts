@@ -1,4 +1,3 @@
-/** Cau truc response thong nhat cua backend: {code, message, data}. */
 export interface ApiResponse<T> {
   code: string;
   message: string;
@@ -17,7 +16,6 @@ export interface PageResponse<T> {
   last: boolean;
 }
 
-/** Enum tu backend luon kem mo ta de hien thi truc tiep. */
 export interface EnumValue {
   code: string;
   description: string;
@@ -30,7 +28,7 @@ export interface BaseSearchRequest {
   sortDirection?: 'ASC' | 'DESC';
 }
 
-/* ---------- Nguoi dung & phan quyen ---------- */
+/* ---------- Người dùng & phân quyền ---------- */
 export interface RoleGroupSummary {
   id: number;
   roleGroupCode: string;
@@ -64,6 +62,7 @@ export interface User {
   lastLoginAt?: string;
   createdDate?: string;
   roleGroups?: RoleGroupSummary[];
+  permissions?: string[];
 }
 
 export interface LoginResponse {
@@ -115,7 +114,7 @@ export interface ShipperPerformance {
   rating: number;
 }
 
-/* ---------- Don hang ---------- */
+/* ---------- Đơn hàng ---------- */
 export interface OrderItem {
   id?: number;
   itemName: string;
@@ -206,7 +205,7 @@ export interface OrderSearchRequest extends BaseSearchRequest {
   toDate?: string;
 }
 
-/* ---------- Dieu phoi ---------- */
+/* ---------- Điều phối ---------- */
 export interface Assignment {
   id: number;
   orderId: number;
@@ -232,7 +231,7 @@ export interface Assignment {
   note?: string;
 }
 
-/* ---------- Phi va voucher ---------- */
+/* ---------- Phí và voucher ---------- */
 export interface FeePreview {
   serviceType: EnumValue;
   distanceKm: number;
@@ -280,7 +279,7 @@ export interface Voucher {
   description?: string;
 }
 
-/* ---------- Thanh toan ---------- */
+/* ---------- Thanh toán ---------- */
 export interface PaymentInit {
   paymentId: number;
   txnRef: string;
@@ -341,7 +340,7 @@ export interface CodSettlement {
   note?: string;
 }
 
-/* ---------- Tracking & thong bao ---------- */
+/* ---------- Tracking & thông báo ---------- */
 export interface TrackingEvent {
   id: number;
   eventType: EnumValue;
